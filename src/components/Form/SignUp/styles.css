@@ -1,0 +1,41 @@
+.gradient-custom-3 {
+    /* fallback for old browsers */
+    background: #84fab0;
+    height: 100vh;
+  
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: -webkit-linear-gradient(to right, rgba(132, 250, 176, 0.5), rgba(143, 211, 244, 0.5));
+  
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: linear-gradient(to right, rgba(132, 250, 176, 0.5), rgba(143, 211, 244, 0.5))
+  }
+  
+  .gradient-custom-4 {
+    /* fallback for old browsers */
+    background: #84fab0;
+    align-items: center;
+    align-content: center;
+    text-align: center;
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: -webkit-linear-gradient(to right, rgba(132, 250, 176, 1), rgba(143, 211, 244, 1));
+  
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: linear-gradient(to right, rgba(132, 250, 176, 1), rgba(143, 211, 244, 1))
+  }
+  gradient-custom-5 {
+    /* fallback for old browsers */
+    background: #b446e7;
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: -webkit-linear-gradient(to right, rgb(154, 63, 190), rgb(173, 143, 244));
+  
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: linear-gradient(to right, rgb(205, 102, 236), rgb(131, 67, 248))
+  }
+  .body {
+    display: flex;
+    flex-direction: column;
+  }
+  .error {
+    font-size: 12px;
+    color: red;
+}

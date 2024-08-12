@@ -1,0 +1,9 @@
+.app {
+    height: 100vh;
+}
+.dark {
+    text-align: center;
+    background-color: rgb(49, 53, 54);
+    color:mintcream;
+    height: 100%;
+}
