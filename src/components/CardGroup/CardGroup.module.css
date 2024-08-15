@@ -1,0 +1,52 @@
+.cardContainer {
+
+    justify-content: space-between;
+    align-items: center;
+    /* you can change the 4 below to 3 if you only want 3 cards per row */
+    grid-gap: 40px;
+    place-items: center;
+}
+
+.card {
+    width: 400px;
+    height: 300px;
+    color: white;
+    background-color: red;
+    position: relative;
+    text-align: center;
+    padding: 0;
+    border-radius: 20px;
+ }
+
+ .row {
+justify-content: space-between;
+ }
+ .titles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    padding: 22px;
+    text-align: left;
+    align-content: end;
+    font-weight: 800px;
+    font-family: "Archivo Black";
+ }
+ .menuImg {
+    display: flex;
+    object-fit: cover;
+    padding: 0;
+    position: absolute;
+    border-radius: 20px;
+ }
+ .selectContainer {
+   width: 100%;
+   height: 100px;
+   align-items: center;
+   align-self: center;
+   align-content: center;
+   justify-content: center;
+   display: flex;
+   flex-direction: column;
+   gap: 12px;
+   margin-bottom: 40px;
+ }

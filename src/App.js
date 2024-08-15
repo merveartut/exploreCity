@@ -16,11 +16,15 @@ import ThemeContainer from "./components/ThemeContainer/ThemeContainer";
 import Weather from "./components/Weather/Weather";
 import SignUp from "./components/Form/SignUp/SignUp";
 import Login from "./components/Form/SignIn/Login"
+import List from "./components/List/List";
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 function App() {
   return (
     <ThemeProvider>
       <LoginProvider>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
       <ThemeContainer>
     <BrowserRouter>
       <Header></Header>
@@ -32,9 +36,11 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/themeSwitcher" element={<ThemeSwitcher />} />
         <Route path="/weather" element={<Weather />} />
+        <Route path="/list/:selectedCity/:date" element={<List />} />
       </Routes>
     </BrowserRouter>
     </ThemeContainer>
+    </LocalizationProvider>
     </LoginProvider>
     </ThemeProvider>
   );
