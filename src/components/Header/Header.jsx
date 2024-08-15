@@ -12,7 +12,7 @@ function Header() {
   const dispatch = useDispatch()
   return (
     <>
-    <Navbar bg="light" data-bs-theme="light">
+    <Navbar bg="light" data-bs-theme="light" >
       <Container>
         <Link className="navbar-brand" to="/">Home</Link>
         <Nav className="me-auto">
