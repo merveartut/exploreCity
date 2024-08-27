@@ -12,7 +12,7 @@ function Header() {
   const dispatch = useDispatch()
   return (
     <>
-    <Navbar bg="light" data-bs-theme="light" >
+    <Navbar bg="light" data-bs-theme="light" style={{height:40}}>
       <Container>
         <Link className="navbar-brand" to="/">Home</Link>
         <Nav className="me-auto">
@@ -25,7 +25,6 @@ function Header() {
       </Container>
       {loggedIn && <MDBBtn onClick={() => dispatch(setLoggedOut())} className="gradient-custom-5 p-2">LOGOUT</MDBBtn>}
     <button onClick={() => {dispatch(setTheme(theme === "light" ? "dark" : "light"))}}>CHANGE THEME</button>
-    {theme}
     </Navbar>
     
   </>

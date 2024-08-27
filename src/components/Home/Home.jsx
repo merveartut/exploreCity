@@ -1,24 +1,30 @@
 import React from "react";
-import videoBg from "../../assets/background_video.mp4";
 import "./styles.css";
-import Menu from "../Menu/Menu";
+import WelcomePage from "./WelcomePage";
+import MenuPage from "./MenuPage";
+import ReactFullpage from "@fullpage/react-fullpage";
 function Home() {
+
   return (
-    <div className="app">
-      <div className="bgContainer">
-      <video autoPlay loop muted src={videoBg}></video>
-      <div className="content">
-          <h1 className="firstPar">Time for your</h1>
-          <h1 className="secPar">next adventure</h1>
-          <p className="thirdPar">Lets plan together</p>
-        </div>
-        
-      
-      </div>
-      <div className="menuContainer">
-        <Menu></Menu>
-      </div>
-    </div>
+    <ReactFullpage
+    //fullpage options
+    normalScrollElements="[data-fullpage-ignore]"
+    scrollingSpeed = {1000} /* Options here */
+
+    render={({ state, fullpageApi }) => {
+      return (
+        <ReactFullpage.Wrapper>
+          <div className="section" style={{position:"static"}}>
+           <WelcomePage goDown={() => fullpageApi.moveSectionDown()}/>
+         
+          </div>
+          <div className="section">
+           <MenuPage/>
+          </div>
+        </ReactFullpage.Wrapper>
+      );
+    }}
+  />
   );
 }
 export default Home;
