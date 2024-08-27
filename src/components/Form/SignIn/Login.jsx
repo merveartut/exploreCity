@@ -42,7 +42,7 @@ function Form() {
        setShowModal(true)
        loginUser(values)
        dispatch(setLoggedIn())
-       navigate("/users")
+       navigate("/")
       }, 400);
     },
     validationSchema: loginValidations,

@@ -2,35 +2,32 @@ import { Provider } from "react-redux";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 
 import themeReducer from "./slices/themeSlice";
-import loginSlice from "./slices/loginSlice";
+import loginReducer from "./slices/loginSlice";
+import planReducer from "./slices/planSlice";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { PersistGate } from "redux-persist/integration/react";
-export const ThemeProvider = ({ children }) => {
-  const store = configureStore({
-    reducer: {
-      theme: themeReducer,
-    },
-  });
-  return <Provider store={store}>{children}</Provider>;
-};
 
-export const LoginProvider = ({ children }) => {
-  const persistConfig = {
-    key: "root",
-    storage
-  }
 
-  const persistedReducer = persistReducer(persistConfig, loginSlice);
+const rootReducer = combineReducers({
+  theme: themeReducer,
+  loggedIn: loginReducer,
+  plan: planReducer,
+})
 
-  const store = configureStore({
-    reducer: {
-      loggedIn: persistedReducer 
-    },
-  });
-  return (
-    <Provider store={store}>
-      <PersistGate persistor={persistStore(store)}>{children}</PersistGate>
-    </Provider>
-  );
-};
+const persistConfig = {
+  key: "root",
+  storage,
+}
+const persistedReducer = persistReducer(persistConfig, rootReducer)
+const store = configureStore({
+  reducer: persistedReducer,
+})
+const persistor = persistStore(store)
+export const CustomProvider = ({ children }) => (
+  <Provider store={store}>
+    <PersistGate  persistor={persistStore(store)}>
+      {children}
+    </PersistGate>
+  </Provider>
+)

@@ -1,0 +1,17 @@
+.selectContainer {
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    align-self: center;
+    align-content: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    position: static;
+    gap: 12px;
+    margin-bottom: 40px;
+  }
+  .outerContainer {
+    padding: 32px;
+
+  }

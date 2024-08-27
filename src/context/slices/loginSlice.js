@@ -1,13 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const initialStates = {value: false}
 export const loginSlice = createSlice({
     name: "loggedIn",
     initialState: {
-        value: false,
+        value: initialStates,
     },
     reducers: {
         setLoggedIn: (state) => {
-            state.value = true
+            if (typeof state !== 'object' || !state.hasOwnProperty('value')) {
+                state = { value: false }; // Reset the state to its correct structure
+            }
+            state.value = true;
         },
         setLoggedOut: (state) => {
             state.value = false
