@@ -5,21 +5,21 @@ import { Button, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Rating from "./Rating";
 import Slider from "react-slick";
-import Modal from "../Modal/Modal";
+import Modal from "../CustomModal/CustomModal";
 import { BsFillBookmarkPlusFill, BsBookmarkCheckFill } from "react-icons/bs";
-import IconButton from '@mui/material/IconButton';
-import { Tooltip } from 'react-tooltip'
+import IconButton from "@mui/material/IconButton";
+import { Tooltip } from "react-tooltip";
+import SliderTemp from "../SliderTemp/SliderTemp";
 
-
-function CardGroup({ items, isCategory, selectedCity, addToList }) {
+function CardGroup({ items, isCategory, addToList, date }) {
   const loggedIn = useSelector((state) => state.loggedIn.value);
-  const plan = useSelector((state) => state.plan.value)
+  const selectedCity = useSelector((state) => state.city.value);
+  const plan = useSelector((state) => state.plan.value);
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
-
   const onCardClick = (item) => {
     if (loggedIn && selectedCity) {
-      navigate(`/list/${selectedCity}/${item.name}`);
+      navigate(`/list/${selectedCity}/${item.name}/${date}`);
     } else if (loggedIn) {
       setShowModal(true);
     } else {
@@ -27,41 +27,38 @@ function CardGroup({ items, isCategory, selectedCity, addToList }) {
     }
   };
   const isDisabled = (item) => {
-    return plan.some(planItem => planItem.id === item.id)
-  }
+    console.log(item);
+    return plan.some((planItem) => planItem.hotel_id === item.hotel_id);
+  };
   const setList = (item) => {
-
-      addToList(item)
-  }
-  var settings = { 
-    dots: true,
+    addToList(item);
+  };
+  var settings = {
+    dots: false,
     infinite: false,
     speed: 500,
-    slidesToShow: 4,
+    slidesToShow: 3,
     responsive: [
       {
         breakpoint: 1024,
         settings: {
-          slidesToShow: 3,
-     
-        }
+          slidesToShow: 2,
+        },
       },
       {
         breakpoint: 768,
         settings: {
-          slidesToShow: 2,
- 
-        }
+          slidesToShow: 1,
+        },
       },
       {
         breakpoint: 480,
         settings: {
           slidesToShow: 1,
- 
-        }
-      }
-    ]
-  }
+        },
+      },
+    ],
+  };
 
   return (
     <div className="container">
@@ -92,48 +89,56 @@ function CardGroup({ items, isCategory, selectedCity, addToList }) {
           ))}
         </div>
       ) : (
-       <Slider {...settings}>
-          {items.map((item) => (
-             <Card
-             className={styles.sliderCard}
-             key={item.id}
-             
-           >
-             <Card.Img
-               src={item?.cardPhotos[0]?.sizes?.urlTemplate}
-               className={styles.cardImg}
-             />
-             <Card.Body className={styles.cardBody}>
-               <div className={styles.itemTitle}>
-                 {item.title}
-                 <br />
-               </div>
-               <row className={styles.footerIcon}>
-               <Rating rating={item.bubbleRating.rating} />
-               <Tooltip id="save-button" className={styles.saveButton} />
-               <IconButton 
-               disabled={isDisabled(item)} 
-               data-tooltip-id="save-button" 
-               data-tooltip-content= "Add to my plan" 
-               style={{alignContent:"end", justifyContent:"end"}} 
-               onClick={() => setList(item)}
-               classes={{
-                root: styles.customIconButton,
-              }}
-               >
-               {!isDisabled(item) && <BsFillBookmarkPlusFill style={{color:"royalblue"}} />}
-               {isDisabled(item) && <BsBookmarkCheckFill style={{opacity:1, color:"green"}}/>}
-               </IconButton>
-               
-               </row>
-              
-             
-             </Card.Body>
-           </Card>
-          )
-           
-          )}
+        <div className={styles.sliderContainer}>
+<Slider {...settings}>
+          {items &&
+            items.map((item) => (
+              <Card className={styles.sliderCard} key={item.property.id}>
+                <Card.Img
+                  src={item.property.photoUrls[0].replace(
+                    "square60",
+                    "square300"
+                  )}
+                  className={styles.cardImg}
+                />
+                <Card.Body className={styles.cardBody}>
+                  <Card.Text>{item.property.name}</Card.Text>
+                </Card.Body>
+                <Card.Footer>
+                  <row className={styles.footerIcon}>
+                    <Rating
+                      rating={item.property.reviewScore}
+                      ratingLabel={item.property.reviewScoreWord}
+                    />
+                    <Tooltip id="save-button" className={styles.saveButton} />
+                    <IconButton
+                      disabled={isDisabled(item)}
+                      data-tooltip-id="save-button"
+                      data-tooltip-content="Add to my plan"
+                      style={{ alignContent: "end", justifyContent: "end" }}
+                      onClick={() => setList(item)}
+                      classes={{
+                        root: styles.customIconButton,
+                      }}
+                    >
+                      {!isDisabled(item) && (
+                        <BsFillBookmarkPlusFill
+                          style={{ color: "royalblue" }}
+                        />
+                      )}
+                      {isDisabled(item) && (
+                        <BsBookmarkCheckFill
+                          style={{ opacity: 1, color: "green" }}
+                        />
+                      )}
+                    </IconButton>
+                  </row>
+                </Card.Footer>
+              </Card>
+            ))}
         </Slider>
+        </div>
+        
       )}
     </div>
   );

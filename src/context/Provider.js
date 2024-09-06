@@ -4,6 +4,7 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import themeReducer from "./slices/themeSlice";
 import loginReducer from "./slices/loginSlice";
 import planReducer from "./slices/planSlice";
+import cityReducer from "./slices/citySlice"
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { PersistGate } from "redux-persist/integration/react";
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
   theme: themeReducer,
   loggedIn: loginReducer,
   plan: planReducer,
+  city: cityReducer,
 })
 
 const persistConfig = {

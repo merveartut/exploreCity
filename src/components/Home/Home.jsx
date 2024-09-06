@@ -19,7 +19,7 @@ function Home() {
          
           </div>
           <div className="section">
-           <MenuPage/>
+           <MenuPage fullpageApi={fullpageApi}/>
           </div>
         </ReactFullpage.Wrapper>
       );

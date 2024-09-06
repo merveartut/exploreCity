@@ -118,7 +118,7 @@ function DraggableButton() {
             {groupedList[type].map((item, itemIndex) => (
               <row key={itemIndex} style={{justifyContent:"space-between", display:"flex", alignItems:"center"}} >
         <div style={{margin:"3px"}}>
-               {itemIndex + 1}. {item.title}
+               {itemIndex + 1}. {item.property.name}
               </div>
               <IconButton
           style={{ alignContent: "end", justifyContent: "end" }}

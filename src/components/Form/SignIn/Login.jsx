@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Formik, useFormik } from "formik";
 import { loginValidations } from "../validations";
 import "./styles.css";
-import Modal from "../../Modal/Modal";
+import CustomModal from "../../CustomModal/CustomModal";
 import usePost from "../../../hooks/usePost/usePost";
 import { useNavigate } from "react-router-dom";
 import {
