@@ -52,23 +52,22 @@ justify-content: space-between;
    margin-bottom: 40px;
  }
  .cardImg {
-   height: 100%;
-   width: 100%;
+   height: 130px;
    object-fit: cover;
    border-width: 22px;
    border-color: aliceblue;
    overflow: auto;
-   padding: 28px;
-   padding-bottom: 12px;
+
 
  }
 
  .sliderCard {
    border-width: 22px;
    border-radius: 0px;
-   height: 280px;
-   width: 210px;
-   min-width: 210px;
+   height: 220px;
+
+   display: flex !important;
+   flex-direction: column;
 
 }
 .title {
@@ -113,9 +112,26 @@ justify-content: space-between;
    display: flex;
    align-items: center;
    justify-content: space-between;
+   height: 20px;
 }
 .saveButton {
    font-size: 10px;
    padding: 6px;
 }
 
+.sliderContainer .slick-slide > div {
+   display: flex;
+   margin: 0 10px;
+ 
+ }
+ .sliderContainer .slick-list {
+   display: flex;
+}
+
+.sliderContainer .slick-slide {
+   margin: 0 10px !important;
+}
+
+.slick-initialized .slick-slide {
+   margin: 0 10px;
+}

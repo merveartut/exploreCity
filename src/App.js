@@ -47,7 +47,7 @@ function App() {
                     <Route path="/themeSwitcher" element={<ThemeSwitcher />} />
                     <Route path="/weather" element={<Weather />} />
                     <Route
-                      path="/list/:selectedCity/:menuType"
+                      path="/list/:selectedCity/:menuType/:date"
                       element={<List />}
                     />
                   </Routes>
