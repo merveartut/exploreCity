@@ -1,13 +1,20 @@
-import React from "react";
-import { useState } from "react";
+import React, { useEffect } from "react";
+import { useState, useRef } from "react";
 import { MDBCard, MDBCardBody, MDBCardText, MDBBtn } from "mdb-react-ui-kit";
-import { Map, Marker } from "@vis.gl/react-google-maps";
+import { Map, Marker, useApiIsLoaded } from "@vis.gl/react-google-maps";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { InfoWindow } from "@vis.gl/react-google-maps";
 import Modal from "../CustomModal/CustomModal";
 
 import styles from "./DailyPlan.module.css";
-function SelectMap({ title, day, addPlace, selectedLocations, fullPageApi }) {
+function SelectMap({
+  selectedCity,
+  category,
+  day,
+  addPlace,
+  selectedLocations,
+  fullPageApi,
+}) {
   const [mapModalVisible, setMapModalVisible] = useState(false);
   const [markerLocation, setMarkerLocation] = useState({
     lat: 51.509865,
@@ -17,11 +24,28 @@ function SelectMap({ title, day, addPlace, selectedLocations, fullPageApi }) {
   const [showDialog, setShowDialog] = useState(false);
   const [dialogLocation, setDialogLocation] = useState("");
   const [placeName, setPlaceName] = useState("");
-
+  const [cityCoordinates, setCityCoordinates] = useState(null);
+  const mapRef = useRef(null);
+  const geocodeCity = (cityName) => {
+    const geocoder = new window.google.maps.Geocoder();
+    geocoder.geocode({ address: cityName }, (results, status) => {
+      if (status === "OK" && results[0]) {
+        const location = results[0].geometry.location;
+        setCityCoordinates({ lat: location.lat(), lng: location.lng() });
+      } else {
+        console.error(
+          "Geocode was not successful for the following reason: " + status
+        );
+      }
+    });
+  };
   const handleMapClick = (mapProps) => {
+    if (!mapRef.current) {
+      mapRef.current = mapProps.map; // Store the map instance on first interaction
+    }
     // checks if location clicked is valid
 
-    fullPageApi.setAllowScrolling(false)
+    fullPageApi.setAllowScrolling(false);
     if (mapProps.detail.placeId) {
       const lat = mapProps.detail.latLng.lat;
       const lng = mapProps.detail.latLng.lng;
@@ -37,7 +61,6 @@ function SelectMap({ title, day, addPlace, selectedLocations, fullPageApi }) {
 
         service.getDetails(request, (place, status) => {
           if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-            console.log("Place name:", place.name);
             setPlaceName(place.name);
             const placePhoto =
               place.photos && place.photos[0]
@@ -60,37 +83,55 @@ function SelectMap({ title, day, addPlace, selectedLocations, fullPageApi }) {
   };
   const onAddLocation = () => {
     const geocoder = new window.google.maps.Geocoder();
-    console.log(day)
     // Check if the day and title already have a location
     const existingLocation = selectedLocations.selectedPlaces.find(
-      (loc) => loc.day === day && selectedLocations.title === title
+      (loc) => loc.day === day && loc.place.some((p) => p.category === category)
     );
-
-    if (existingLocation) {
-      alert(
-        `A location for day ${day} has already been added for the title "${title}".`
-      );
+    if (category === "hotel" && existingLocation) {
+      alert(`A hotel for day ${day} has already been added.`);
       return;
     }
 
     geocoder.geocode({ location: selectedLocation }, (results, status) => {
       if (status === "OK") {
         if (results[0]) {
-          addPlace((prevState) => ({
-            title: title, // Keep the title from props
-            selectedPlaces: [
-              ...prevState.selectedPlaces,
-              {
-                day: day, // Add the current day
-                place: {
-                  name: placeName || results[0].formatted_address,
-                  location: selectedLocation,
-                },
-              },
-            ],
-          }));
-          setShowDialog(false)
-          fullPageApi.setAllowScrolling(true)
+          addPlace((prevState) => {
+            const updatedPlaces = [...prevState.selectedPlaces];
+            const dayIndex = updatedPlaces.findIndex((loc) => loc.day === day);
+
+            if (dayIndex !== -1) {
+              // Day exists, update the existing entry
+              if (
+                category === "hotel" &&
+                updatedPlaces[dayIndex].place.some(
+                  (p) => p.category === "hotel"
+                )
+              ) {
+                alert(`A hotel for day ${day} has already been added.`);
+                return;
+              }
+              updatedPlaces[dayIndex].place.push({
+                category,
+                name: placeName || results[0].formatted_address,
+                location: selectedLocation,
+              });
+            } else {
+              // Day does not exist, add a new entry
+              updatedPlaces.push({
+                day,
+                place: [
+                  {
+                    category,
+                    name: placeName || results[0].formatted_address,
+                    location: selectedLocation,
+                  },
+                ],
+              });
+            }
+            return { ...prevState, selectedPlaces: updatedPlaces };
+          });
+          setShowDialog(false);
+          fullPageApi.setAllowScrolling(true);
         }
       } else {
         console.error("Geocoder failed due to: " + status);
@@ -103,12 +144,31 @@ function SelectMap({ title, day, addPlace, selectedLocations, fullPageApi }) {
 
   const handleMouseLeave = () => {
     if (fullPageApi) fullPageApi.setAllowScrolling(true);
-  }
-  // deletes selected location from the list
+  };
+
+  useEffect(() => {
+    geocodeCity(selectedCity);
+  }, [selectedCity]);
+
+  useEffect(() => {
+    if (mapRef.current && cityCoordinates) {
+      mapRef.current.map.setCenter(cityCoordinates); // Use setCenter method
+      mapRef.current.map.setZoom(13); // Set zoom level as needed
+    }
+  }, [cityCoordinates]);
+  const handleMapLoad = (map) => {
+    mapRef.current = map; // Store the map instance when the map loads
+  };
   return (
-    <div style={{ padding: "2px" }} onMouseEnter={handleMouseEnter}
-    onMouseLeave={handleMouseLeave}>
-      <APIProvider apiKey={"AIzaSyCiuu-4GECMe7aBpKsXFI1J06lbn80FfbA"}>
+    <div
+      style={{ padding: "2px" }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <APIProvider
+        apiKey={"AIzaSyCiuu-4GECMe7aBpKsXFI1J06lbn80FfbA"}
+        onLoad={(e) => handleMapLoad(e)}
+      >
         <div className={styles.mapContainer}>
           <Map
             style={{ height: "100%", width: "100%" }}
@@ -116,6 +176,7 @@ function SelectMap({ title, day, addPlace, selectedLocations, fullPageApi }) {
             defaultCenter={markerLocation}
             gestureHandling={"greedy"}
             disableDefaultUI
+            onIdle={handleMapLoad} // Capture the map instance here
             onClick={(mapProps) => handleMapClick(mapProps)}
           >
             {showDialog && (
