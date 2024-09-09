@@ -115,7 +115,7 @@ function Menu({fullpageApi}) {
        <Picker dateValue={date} onSelectDate={handleDateChange}></Picker>
       </div>
       <div style={{justifyContent:"center", display:"flex", justifyItems:"center"}}>
-      <DailyPlan fullpageApi={fullpageApi} days={dayRange} date={date}></DailyPlan>
+      <DailyPlan selectedCity={selectedCity.value} fullpageApi={fullpageApi} days={dayRange} date={date}></DailyPlan>
       </div>
      
       {/* <CardGroup

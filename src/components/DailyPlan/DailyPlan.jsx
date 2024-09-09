@@ -16,22 +16,26 @@ import { ListItemText } from "@mui/material";
 import { IoMdArrowDropright } from "react-icons/io";
 import Menu from "@mui/material/Menu";
 import { Button } from "react-bootstrap";
+import categoriesConfig from "./categoriesConfig";
 
-function DailyPlan({ days, date, fullpageApi }) {
+function DailyPlan({ days, date, fullpageApi, selectedCity }) {
   // const {isLoaded} = useJsApiLoader({
   //   googleMapsApiKey: "AIzaSyCCFb5VXCV397TH6-v5OhfzxRDgcN6TdVk" ,
   // })
   const [listOfLocations, setListOfLocations] = useState({
-    title: "",
-    selectedPlaces: [{ day: null, place: { name: "", location: null } }],
+    selectedPlaces: [],
   });
   const [selectedDay, setSelectedDay] = useState(1);
-  const [selectedItem, setSelectedItem] = useState(1);
+  const [selectedCategory, setSelectedCategory] = useState("hotel");
+
   const handleListItemClick = (event, index) => {
-    setSelectedItem(index);
+    setSelectedDay(index);
   };
   const handleAddLocation = (value) => {
     setListOfLocations(value);
+  };
+  const handleCategoryClick = (categoryId) => {
+    setSelectedCategory(categoryId);
   };
   const [anchorEl, setAnchorEl] = useState(null);
   const [openPopover, setOpenPopover] = useState(false);
@@ -45,11 +49,24 @@ function DailyPlan({ days, date, fullpageApi }) {
       // If a different item is clicked, open the menu for the new item
       setAnchorEl(event.currentTarget);
       setOpenPopover(true);
-      setSelectedItem(index); // Set the selected item to the new one
+      setSelectedDay(index); // Set the selected item to the new one
     }
-  }
+  };
+  const groupPlacesByCategory = (places, selectedDay) => {
+    const grouped = {};
 
+    places
+      .filter((item) => item.day === selectedDay)
+      .flatMap((item) => item.place)
+      .forEach((place) => {
+        if (!grouped[place.category]) {
+          grouped[place.category] = [];
+        }
+        grouped[place.category].push(place);
+      });
 
+    return grouped;
+  };
   return (
     <Container fluid={false}>
       {/* Stack the columns on mobile by making one full-width and the other half-width */}
@@ -106,11 +123,11 @@ function DailyPlan({ days, date, fullpageApi }) {
             component="nav"
             aria-labelledby="nested-list-subheader"
           >
-            {days.map((day, index) => (
+            {days.length ? (days.map((day, index) => (
               <row style={{ display: "flex", flexDirection: "row" }}>
                 <ListItemButton
                   key={index}
-                  selected={selectedItem === index + 1}
+                  selected={selectedDay === index + 1}
                   onClick={(event) => handleListItemClick(event, index + 1)}
                   style={{ height: "40px", textAlign: "center" }}
                 >
@@ -120,7 +137,7 @@ function DailyPlan({ days, date, fullpageApi }) {
                   <IoMdArrowDropright />
                 </IconButton>
               </row>
-            ))}
+            ))) : <div>Please select date</div>}
           </List>
           <Menu
             id="demo-positioned-menu"
@@ -138,10 +155,17 @@ function DailyPlan({ days, date, fullpageApi }) {
             }}
           >
             <div style={{ padding: "10px" }}>
-              <h5>{listOfLocations.title}</h5>
-              {listOfLocations.selectedPlaces.map((item) => (
-                <div>
-                  {selectedItem === item.day && <p>{item.place.name}</p>}
+              {Object.entries(
+                groupPlacesByCategory(
+                  listOfLocations.selectedPlaces,
+                  selectedDay
+                )
+              ).map(([category, places]) => (
+                <div key={category}>
+                  <h5>{category}</h5>
+                  {places.map((place, index) => (
+                    <p key={index}>{place.name}</p>
+                  ))}
                 </div>
               ))}
             </div>
@@ -168,8 +192,9 @@ function DailyPlan({ days, date, fullpageApi }) {
               }}
             >
               <SelectMap
-                title={"Hotel"}
-                day={selectedItem}
+                category={selectedCategory}
+                day={selectedDay}
+                selectedCity={selectedCity}
                 addPlace={handleAddLocation}
                 selectedLocations={listOfLocations}
                 fullPageApi={fullpageApi}
@@ -186,15 +211,22 @@ function DailyPlan({ days, date, fullpageApi }) {
                   height: "100%",
                 }}
               >
-                <IconButton>
-                  <FaHotel style={{ color: "black" }} />
-                </IconButton>
-                <IconButton>
-                  <MdOutlineRestaurant />
-                </IconButton>
-                <IconButton>
-                  <GiAncientColumns />
-                </IconButton>
+                {categoriesConfig.map((category) => {
+                  const Icon = category.icon;
+                  return (
+                    <IconButton
+                      key={category.id}
+                      onClick={() => handleCategoryClick(category.id)}
+                    >
+                      <Icon
+                        style={{
+                          color:
+                            selectedCategory === category.id ? "blue" : "black",
+                        }}
+                      />
+                    </IconButton>
+                  );
+                })}
               </div>
             </Col>
           </Row>
