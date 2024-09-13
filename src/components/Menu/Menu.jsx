@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import CardGroup from "../CardGroup/CardGroup";
 import { data } from "./data";
 import styles from "./Menu.module.css";
@@ -11,10 +11,14 @@ import Picker from "../DatePicker/Picker";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import DailyPlan from "../DailyPlan/DailyPlan";
+import { Button } from "react-bootstrap";
 function Menu({fullpageApi}) {
   const selectedCity = useSelector((state) => state.city.value);
   const dispatch = useDispatch();
   const loggedIn = useSelector((state) => state.loggedIn.value);
+  const [plan, setPlan] =useState({
+    selectedPlaces: [],
+  })
   const PAGE_SIZE = 50;
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
@@ -35,12 +39,12 @@ function Menu({fullpageApi}) {
       currentDate = currentDate.add(1, 'day');
     }
   
-    return datesInRange;
+    return datesInRange
   }
 
   const handleDateChange = (date) => {
-    const start = dayjs(date[0]);
-    const end = dayjs(date[1]);
+    const start = dayjs(date[0])
+    const end = dayjs(date[1])
   
     const datesArray = generateDateArray(start, end);
     setDayRange(datesArray)
@@ -98,6 +102,7 @@ function Menu({fullpageApi}) {
       width: 400,
     }),
   };
+
   return (
     <div className={styles.outerContainer}>
       <div className={styles.selectContainer}>
@@ -115,8 +120,12 @@ function Menu({fullpageApi}) {
        <Picker dateValue={date} onSelectDate={handleDateChange}></Picker>
       </div>
       <div style={{justifyContent:"center", display:"flex", justifyItems:"center"}}>
-      <DailyPlan selectedCity={selectedCity.value} fullpageApi={fullpageApi} days={dayRange} date={date}></DailyPlan>
+      <DailyPlan plan={plan} setPlan={setPlan} selectedCity={selectedCity.value} fullpageApi={fullpageApi} days={dayRange} date={date}></DailyPlan>
       </div>
+      <div style={{justifyContent:"center", display:"flex", justifyItems:"center"}}>
+      <Button onClick={() => navigate(`/plan/${plan}`, { state: { plan } })}>CREATE PLAN</Button>
+      </div>
+     
      
       {/* <CardGroup
         items={data}
@@ -124,8 +133,15 @@ function Menu({fullpageApi}) {
         selectedCity={selectedCity?.value}
         date={date}
       ></CardGroup> */}
+  
+      {/* <CardGroup
+        items={data}
+        isCategory={true}
+        selectedCity={selectedCity?.value}
+        date={date}
+      ></CardGroup> */}
     </div>
-  );
+  )
 }
 
 export default Menu;

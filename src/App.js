@@ -26,6 +26,7 @@ import DraggableButton from "./components/DraggableButton/DraggableButton";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { CustomProvider } from "./context/Provider";
+import PlanPage from "./components/PlanPage/PlanPage";
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
                     <Route path="/signup" element={<SignUp />} />
                     <Route path="/themeSwitcher" element={<ThemeSwitcher />} />
                     <Route path="/weather" element={<Weather />} />
+                    <Route path="/plan/:plan" element={<PlanPage />} />
                     <Route
                       path="/list/:selectedCity/:menuType/:date"
                       element={<List />}

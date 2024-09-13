@@ -17,4 +17,55 @@
     width: 100%;
     border: 2px solid black;
 }
+.customAccordionSummaryContent {
+    margin: 0 !important;  /* Remove margin */
+}
+.buttonTooltip {
+    font-size: 10px;
+  
+}
+.infoWindow {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: visible;
+}
 
+
+  .addButton {
+    border-radius: 10px;
+    background-color: seagreen;
+    color: aliceblue;
+    padding: 6px;
+    margin-top: 5px;
+    border-width: 0px;
+    overflow: visible;
+  }
+  .ratingText {
+    margin-top: 5px;
+    font-weight: bold;
+  }
+
+  
+  .infoWindow .headerContent {
+    /* Add your custom styles for the header content */
+    font-size: 16px; /* Example */
+    font-weight: bold; /* Example */
+    color: #333; /* Example */
+  }
+
+  .disabledOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.7); /* Light overlay */
+    color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    z-index: 10;
+  }
