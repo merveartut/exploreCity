@@ -18,7 +18,6 @@ import { Border } from "react-bootstrap-icons";
 function List({date}) {
 
   const city = useSelector((state) => state.city.value);
-  console.log('ssssssssssss', date)
   const [items, setItems] = useState();
   const navigate = useNavigate();
   const onCardClick = () => {

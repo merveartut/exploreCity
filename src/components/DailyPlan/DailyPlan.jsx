@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 
 import Container from "react-bootstrap/Container";
@@ -15,27 +15,49 @@ import ListItemButton from "@mui/material/ListItemButton";
 import { ListItemText } from "@mui/material";
 import { IoMdArrowDropright } from "react-icons/io";
 import Menu from "@mui/material/Menu";
-import { Button } from "react-bootstrap";
 import categoriesConfig from "./categoriesConfig";
+import { MdDelete } from "react-icons/md";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import Tooltip from '@mui/material/Tooltip';
+import styles from "./DailyPlan.module.css"
+import Button from '@mui/material/Button'
 
-function DailyPlan({ days, date, fullpageApi, selectedCity }) {
-  // const {isLoaded} = useJsApiLoader({
-  //   googleMapsApiKey: "AIzaSyCCFb5VXCV397TH6-v5OhfzxRDgcN6TdVk" ,
-  // })
-  const [listOfLocations, setListOfLocations] = useState({
-    selectedPlaces: [],
-  });
-  const [selectedDay, setSelectedDay] = useState(1);
-  const [selectedCategory, setSelectedCategory] = useState("hotel");
+function DailyPlan({ days, date, fullpageApi, selectedCity, setPlan, plan }) {
+  const [selectedDay, setSelectedDay] = useState(1)
+  const [selectedCategory, setSelectedCategory] = useState("hotel")
 
-  const handleListItemClick = (event, index) => {
-    setSelectedDay(index);
-  };
+  const handleListItemClick = (event, day) => {
+    setSelectedDay(day)
+    setSelectedCategory("hotel")
+  }
   const handleAddLocation = (value) => {
-    setListOfLocations(value);
-  };
+    setPlan(value)
+  }
   const handleCategoryClick = (categoryId) => {
-    setSelectedCategory(categoryId);
+    setSelectedCategory(categoryId)
+  }
+  const handleDeleteLocation = (day, category, placeName) => {
+    setPlan((prevState) => {
+      const updatedPlaces = prevState.selectedPlaces
+        .map((location) => {
+          if (location.day === day) {
+            return {
+              ...location,
+              place: location.place.filter(
+                (place) =>
+                  !(place.category === category && place.name === placeName)
+              ),
+            };
+          }
+          return location;
+        })
+        .filter((location) => location.place.length > 0); // Remove day if no places left
+
+      return { ...prevState, selectedPlaces: updatedPlaces };
+    });
   };
   const [anchorEl, setAnchorEl] = useState(null);
   const [openPopover, setOpenPopover] = useState(false);
@@ -67,6 +89,7 @@ function DailyPlan({ days, date, fullpageApi, selectedCity }) {
 
     return grouped;
   };
+  
   return (
     <Container fluid={false}>
       {/* Stack the columns on mobile by making one full-width and the other half-width */}
@@ -123,21 +146,25 @@ function DailyPlan({ days, date, fullpageApi, selectedCity }) {
             component="nav"
             aria-labelledby="nested-list-subheader"
           >
-            {days.length ? (days.map((day, index) => (
-              <row style={{ display: "flex", flexDirection: "row" }}>
-                <ListItemButton
-                  key={index}
-                  selected={selectedDay === index + 1}
-                  onClick={(event) => handleListItemClick(event, index + 1)}
-                  style={{ height: "40px", textAlign: "center" }}
-                >
-                  <ListItemText primary={` ${index + 1}. day`} />
-                </ListItemButton>
-                <IconButton onClick={(e) => handlePopover(e, index + 1)}>
-                  <IoMdArrowDropright />
-                </IconButton>
-              </row>
-            ))) : <div>Please select date</div>}
+            {days.length ? (
+              days.map((day, index) => (
+                <row style={{ display: "flex", flexDirection: "row" }}>
+                  <ListItemButton
+                    key={index}
+                    selected={selectedDay === index + 1}
+                    onClick={(event) => handleListItemClick(event, index +1)}
+                    style={{ height: "40px", textAlign: "center" }}
+                  >
+                    <ListItemText primary={` ${index + 1}. day`} />
+                  </ListItemButton>
+                  <IconButton onClick={(e) => handlePopover(e, index + 1)}>
+                    <IoMdArrowDropright />
+                  </IconButton>
+                </row>
+              ))
+            ) : (
+              <div>Please select date</div>
+            )}
           </List>
           <Menu
             id="demo-positioned-menu"
@@ -156,17 +183,46 @@ function DailyPlan({ days, date, fullpageApi, selectedCity }) {
           >
             <div style={{ padding: "10px" }}>
               {Object.entries(
-                groupPlacesByCategory(
-                  listOfLocations.selectedPlaces,
-                  selectedDay
-                )
-              ).map(([category, places]) => (
-                <div key={category}>
-                  <h5>{category}</h5>
-                  {places.map((place, index) => (
-                    <p key={index}>{place.name}</p>
-                  ))}
-                </div>
+                groupPlacesByCategory(plan.selectedPlaces, selectedDay)
+              ).map(([category, places], index) => (
+                <Accordion key={index} style={{ width: "100%" }}>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    id={`panel${index}-header`}
+                    style={{ minHeight: "35px", backgroundColor: "thistle" }}
+                  >
+                    <div>{category}</div>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    {places.map((place, placeIndex) => (
+                      <div
+                        key={placeIndex}
+                        style={{
+                          justifyContent: "space-between",
+                          display: "flex",
+                          alignItems: "center",
+                          marginBottom: "8px",
+                        }}
+                      >
+                        <div style={{ margin: "3px" }}>
+                          {placeIndex + 1}. {place.name}
+                        </div>
+                        <Button
+                          style={{ alignContent: "end", justifyContent: "end" }}
+                          onClick={() =>
+                            handleDeleteLocation(
+                              selectedDay,
+                              category,
+                              place.name
+                            )
+                          }
+                        >
+                          <MdDelete />
+                        </Button>
+                      </div>
+                    ))}
+                  </AccordionDetails>
+                </Accordion>
               ))}
             </div>
           </Menu>
@@ -194,11 +250,17 @@ function DailyPlan({ days, date, fullpageApi, selectedCity }) {
               <SelectMap
                 category={selectedCategory}
                 day={selectedDay}
+                date={date}
                 selectedCity={selectedCity}
                 addPlace={handleAddLocation}
-                selectedLocations={listOfLocations}
+                selectedLocations={plan}
                 fullPageApi={fullpageApi}
               ></SelectMap>
+               {!days.length && (
+              <div className={styles.disabledOverlay}>
+                <h2>Please select a date to enable the map</h2>
+              </div>
+            )}
             </Col>
             <Col xs={2} md={1} sm={2} style={{ padding: "0px" }}>
               <div
@@ -209,22 +271,31 @@ function DailyPlan({ days, date, fullpageApi, selectedCity }) {
                   flexDirection: "column",
                   border: "2px solid black",
                   height: "100%",
+                  alignItems:"center"
                 }}
               >
                 {categoriesConfig.map((category) => {
                   const Icon = category.icon;
                   return (
-                    <IconButton
-                      key={category.id}
-                      onClick={() => handleCategoryClick(category.id)}
-                    >
-                      <Icon
-                        style={{
-                          color:
-                            selectedCategory === category.id ? "blue" : "black",
-                        }}
-                      />
-                    </IconButton>
+                      <Tooltip title={!days.length ? "Please select date first!" : category.id}>
+                        <span>
+                        <IconButton
+                        key={category.id}
+                        disabled={!days.length}
+                        onClick={() => handleCategoryClick(category.id)}
+                      >
+                        <Icon
+                          style={{
+                            color:
+                              selectedCategory === category.id
+                                ? "blue"
+                                : "black",
+                          }}
+                        />
+                      </IconButton>
+                        </span>
+                     
+                      </Tooltip>
                   );
                 })}
               </div>

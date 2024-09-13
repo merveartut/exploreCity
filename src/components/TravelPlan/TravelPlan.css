@@ -1,0 +1,135 @@
+.itinerary-container {
+    font-family: 'Arial', sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+  }
+  
+  .itinerary-header {
+    position: relative;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .header-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+  
+  .header-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 10px 20px;
+    border-radius: 5px;
+  }
+  
+  .header-content h1 {
+    margin: 0;
+    font-size: 36px;
+  }
+  
+  .header-content p {
+    margin: 5px 0 0;
+    font-size: 18px;
+  }
+  
+  .day-container {
+    margin-bottom: 40px;
+  }
+  
+  .day-container h2 {
+    font-size: 28px;
+    margin-bottom: 15px;
+    color: #333;
+  }
+  
+  .places-container {
+   flex-direction: row;
+    display: flex;
+    flex-wrap: wrap;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr))
+  }
+  
+  .place-card {
+    display: flex;
+    background-color: transparent;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    width: 180px;
+    align-items: center;
+  }
+  
+  .place-photo {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-right: 2px solid #f0f0f0;
+    border-radius: 3px;
+  }
+  
+  .place-info {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+   
+  }
+  
+  .place-info h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+  }
+  
+  .place-info p {
+    margin: 3px 0;
+    font-size: 12px;
+    color: #666;
+  }
+  
+  .place-info a {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 13px;
+    margin-top: 3px;
+    transition: color 0.2s;
+  }
+  
+  .place-info a:hover {
+    color: #0056b3;
+  }
+
+  .category-photo {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    border-right: 2px solid #f0f0f0;
+  }
+  .place-name {
+    font-family: "Kanit";
+  }
+  .place-details {
+    font-size: 10px;
+  }
+  .img-category {
+    writing-mode: vertical-lr;
+ text-orientation: upright;
+text-align: center;
+  }
+  .category-group {
+    margin-bottom: 20px;
+  }
+  
+  .category-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
