@@ -5,7 +5,8 @@ export const citySlice = createSlice({
     initialState: {
         value: {
             label: "",
-            value: ""
+            value: "",
+            coord:""
         },
     },
     reducers: {
