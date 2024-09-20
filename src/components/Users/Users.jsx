@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 
 function Users() {
   const [users, setUsers] = useState([]);
-  const loggedIn = useSelector((state) => state.loggedIn.value);
+  const loggedIn = useSelector((state) => state.auth.loggedIn);
   const { data, loading, error, deleteUser } = useDelete();
   const [filterText, setFilterText] = useState("");
   const navigate = useNavigate();

@@ -69,3 +69,46 @@
     font-size: 18px;
     z-index: 10;
   }
+  .headerCol {
+    align-content: center;
+    justify-content: center;
+    display: flex;
+    border: 2px;
+    border-style: solid;
+    border-color:rgb(218, 101, 6) ;
+    border-radius: 6px;
+    background-color: rgb(248, 248, 248);
+    color: rgb(34, 37, 41);
+    align-items: center;
+  }
+
+  .dayListCol {
+    align-content: center;
+    justify-content: center;
+    display: block;
+    border: 2px;
+    border-style: solid;
+    border-radius: 6px;
+  }
+
+  .categoryCol {
+    padding: 0px;
+    justify-content: flex-start;
+    display: flex;
+    flex-direction: column;
+    border: 2px;
+    height: 100%;
+    border-style: solid;
+    align-items:center;
+    border-radius: 6px;
+  }
+
+  .listItemButton {
+    height: 40px;
+    text-align: center;
+    background-color: rgb(87, 110, 211, .4);
+  }
+
+  .listItemText {
+    font-weight: bold;
+  }

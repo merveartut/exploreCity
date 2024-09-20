@@ -12,7 +12,7 @@ import { Tooltip } from "react-tooltip";
 import SliderTemp from "../SliderTemp/SliderTemp";
 
 function CardGroup({ items, isCategory, addToList, date }) {
-  const loggedIn = useSelector((state) => state.loggedIn.value);
+  const loggedIn = useSelector((state) => state.auth.loggedIn);
   const selectedCity = useSelector((state) => state.city.value);
   const plan = useSelector((state) => state.plan.value);
   const [showModal, setShowModal] = useState(false);

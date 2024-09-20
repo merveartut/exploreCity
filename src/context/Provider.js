@@ -12,7 +12,7 @@ import { PersistGate } from "redux-persist/integration/react";
 
 const rootReducer = combineReducers({
   theme: themeReducer,
-  loggedIn: loginReducer,
+  auth: loginReducer,
   plan: planReducer,
   city: cityReducer,
 })

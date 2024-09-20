@@ -78,7 +78,7 @@ function SelectMap({
           setPlaceName(place.name)
           const placePhoto =
             place.photos && place.photos[0]
-              ? place.photos[0].getUrl({ maxWidth: 100 })
+              ? place.photos[0].getUrl({ maxWidth: 300 })
               : "";
           const placeRating = place.rating || "No rating available"
           setPlaceDetails({ photo: placePhoto, rating: placeRating })
@@ -241,7 +241,7 @@ function SelectMap({
                 style={{height:"auto", overflow:"visible"}}
                 >
                   <div ref={infoWindowRef} className={styles.infoWindow}>
-                  <img src={placeDetails.photo}></img>
+                  <img src={placeDetails.photo} style={{height:"100px"}}></img>
                   <div className={styles.ratingText}>{placeDetails.rating}</div>
                   
                   {isLocationAdded(cityCoordinates) ? (

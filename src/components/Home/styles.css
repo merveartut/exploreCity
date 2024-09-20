@@ -74,3 +74,49 @@ height: 100vh;
     border-radius: 15px;
 }
 
+.busImg {
+    object-fit: contain;
+    z-index: 0;
+    position: absolute;
+    transform: rotate(22deg);
+    height: 300px;
+    margin-top: 2px;
+    margin-left: 10px;
+  }
+.roadImg {
+    object-fit: contain;
+    z-index: 0;
+    position: absolute;
+    transform: rotate(8deg);
+    height: 300px;
+    margin-top: 320px;
+    margin-left: 200px;
+}
+.grassImg {
+    object-fit: contain;
+    z-index: 0;
+    position: absolute;
+    transform: rotate(-30deg);
+    height: 70px;
+    margin-top: 300px;
+    margin-left: 200px;
+}
+.signBoardImg {
+    object-fit: contain;
+    z-index: 0;
+    position: absolute;
+    transform: rotate(5deg);
+    height: 220px;
+    margin-top: 40px;
+    margin-left: 1000px;
+   
+}
+.boardText {
+    margin-top: 70px;
+    position: absolute;
+    margin-left: 1070px;
+    transform: rotate(5deg);
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-size: 30px;
+    color: azure;
+}

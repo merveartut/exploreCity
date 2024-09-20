@@ -11,46 +11,47 @@ import Picker from "../DatePicker/Picker";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import DailyPlan from "../DailyPlan/DailyPlan";
+import { ReactComponent as MyIcon } from "../../assets/iconButton.svg";
+import { setPlan } from "../../context/slices/planSlice";
+
 import { Button } from "react-bootstrap";
-function Menu({fullpageApi}) {
+import { IconButton } from "@mui/material";
+function Menu({ fullpageApi }) {
   const selectedCity = useSelector((state) => state.city.value);
   const dispatch = useDispatch();
-  const loggedIn = useSelector((state) => state.loggedIn.value);
-  const [plan, setPlan] =useState({
+  const loggedIn = useSelector((state) => state.auth.loggedIn);
+  const [plan, setPlans] = useState({
     selectedPlaces: [],
-  })
+  });
   const PAGE_SIZE = 50;
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
-  const [date, setDate] = useState([
-    dayjs(), // Today
-    dayjs().add(1, "day"), // Tomorrow
-  ]);
-  const [dayRange, setDayRange] = useState([])
+  const [date, setDate] = useState([]);
+  const [dayRange, setDayRange] = useState([]);
   const generateDateArray = (startDate, endDate) => {
     const start = dayjs(startDate);
     const end = dayjs(endDate);
-  
+
     const datesInRange = [];
     let currentDate = start;
-  
-    while (currentDate.isBefore(end, 'day') || currentDate.isSame(end, 'day')) {
+
+    while (currentDate.isBefore(end, "day") || currentDate.isSame(end, "day")) {
       datesInRange.push(currentDate.format("YYYY-MM-DD"));
-      currentDate = currentDate.add(1, 'day');
+      currentDate = currentDate.add(1, "day");
     }
-  
-    return datesInRange
-  }
+
+    return datesInRange;
+  };
 
   const handleDateChange = (date) => {
-    const start = dayjs(date[0])
-    const end = dayjs(date[1])
-  
+    const start = dayjs(date[0]);
+    const end = dayjs(date[1]);
+
     const datesArray = generateDateArray(start, end);
-    setDayRange(datesArray)
-  
+    setDayRange(datesArray);
+
     setDate([start, end]); // Make sure you're setting `dayjs` objects in the state
-  }
+  };
   const fetchCities = async (inputValue) => {
     try {
       const response = await axios.get(`http://localhost:3000/cities`);
@@ -102,7 +103,10 @@ function Menu({fullpageApi}) {
       width: 400,
     }),
   };
-
+  const handleCreatePlan = (plan) => {
+    dispatch(setPlan(plan))
+    navigate(`/plan/${selectedCity.label}/${plan}`, { state: { selectedCity, plan } })
+  }
   return (
     <div className={styles.outerContainer}>
       <div className={styles.selectContainer}>
@@ -117,31 +121,39 @@ function Menu({fullpageApi}) {
           styles={customStyles}
           onMenuScrollToBottom={handleMenuScrollToBottom}
         />
-       <Picker dateValue={date} onSelectDate={handleDateChange}></Picker>
+        <Picker dateValue={date} onSelectDate={handleDateChange}></Picker>
       </div>
-      <div style={{justifyContent:"center", display:"flex", justifyItems:"center"}}>
-      <DailyPlan plan={plan} setPlan={setPlan} selectedCity={selectedCity.value} fullpageApi={fullpageApi} days={dayRange} date={date}></DailyPlan>
+      <div
+        style={{
+          justifyContent: "center",
+          display: "flex",
+          justifyItems: "center",
+        }}
+      >
+        <DailyPlan
+          plan={plan}
+          setPlan={setPlans}
+          selectedCity={selectedCity.value}
+          fullpageApi={fullpageApi}
+          days={dayRange}
+          date={date}
+        ></DailyPlan>
       </div>
-      <div style={{justifyContent:"center", display:"flex", justifyItems:"center"}}>
-      <Button onClick={() => navigate(`/plan/${plan}`, { state: { plan } })}>CREATE PLAN</Button>
+      <div
+        style={{
+          justifyContent: "center",
+          display: "flex",
+          justifyItems: "center",
+        }}
+      >
+        <IconButton
+          onClick={() => handleCreatePlan(plan)}
+        >
+          <MyIcon height="70" width="200" />
+        </IconButton>
       </div>
-     
-     
-      {/* <CardGroup
-        items={data}
-        isCategory={true}
-        selectedCity={selectedCity?.value}
-        date={date}
-      ></CardGroup> */}
-  
-      {/* <CardGroup
-        items={data}
-        isCategory={true}
-        selectedCity={selectedCity?.value}
-        date={date}
-      ></CardGroup> */}
     </div>
-  )
+  );
 }
 
 export default Menu;
