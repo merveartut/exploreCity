@@ -1,22 +1,19 @@
-import React from "react";
-import {
-  PDFDownloadLink,
-  Document,
-  Page,
-  Text,
-  View,
-  StyleSheet,
-  Image,
-} from "@react-pdf/renderer";
-import "./TravelPlan.css";
-import bgImage from "../../assets/header.jpg";
-import hotelFigure from "../../assets/bed.png";
-import { Container, Row, Col, Card, ListGroup } from "react-bootstrap";
-import figureConfig from "./FigureConfig";
-const TravelPlan = ({ planData }) => {
-  // Styles for PDF
+import React, {useEffect} from "react";
 
-  console.log("hgujgtujhg", planData);
+import "./TravelPlan.css";
+import { useDispatch, useSelector } from "react-redux";
+import { setPlan } from "../../context/slices/planSlice";
+import PlanCard from "./PlanCard";
+import { useNavigate } from "react-router-dom";
+import html2canvas from "html2canvas";
+import { useRef } from "react";
+const TravelPlan = ({ planData, captureImage }) => {
+  // Styles for PDF
+  const previewRef = useRef(null)
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const selectedCity = useSelector((state) => state.city.value)
+  const userData = useSelector((state) => state.auth.user)
   // Component to generate PDF
 
   // Styles for web view
@@ -29,73 +26,43 @@ const TravelPlan = ({ planData }) => {
       return acc;
     }, {});
   };
+  const handleImageGenerated = (imgData) => {
+   captureImage(imgData)
+  };
+
+  useEffect(() => {
+  
+    const capturePreview = async () => {
+      const canvas = await html2canvas(previewRef.current)
+      const imgData = canvas.toDataURL("image/png")
+      
+      // Call the provided callback to update the plans with the generated image
+      if (handleImageGenerated) {
+        handleImageGenerated(imgData)
+      }
+
+    }
+  
+    capturePreview()
+  }, [planData])
   return (
-    <div className="itinerary-container">
-      {/* Header */}
-      <header className="itinerary-header">
-        <img src={bgImage} alt="Beach Party Header" className="header-image" />
+    <div ref={previewRef} className="itinerary-container">
+       <button className="go-back-btn" onClick={() => navigate(-1)}>
+        Go Back
+      </button>
+       <header className="itinerary-header">
+      
         <div className="header-content">
-          <h1>Travel Itinerary</h1>
-          <p>August 2024</p>
+          <div className="travelText">Travel</div>
+           <div className="itineraryText">ITINERARY</div>
+          <div className="cityText">{selectedCity.label}</div>
         </div>
       </header>
-
-      {/* Travel Plan Content */}
-      {planData.map((day, index) => (
-        <div key={index} className="day-container">
-          <h2>Day {day.day} </h2>
-
-          {Object.keys(groupPlacesByCategory(day.place)).map((category, i) => (
-            <div
-              key={i}
-             className="category-group"
-              style={{ display: "flex", flexDirection: "row" }}
-            >
-              {/* Render category image if available */}
-              {figureConfig[category] && (
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    width: "auto",
-                  }}
-                >
-                  <div className="img-category">
-                    {figureConfig[category].label}
-                  </div>
-                  <img
-                    src={figureConfig[category].image}
-                    alt={figureConfig[category].label}
-                    className="category-photo"
-                  />
-                </div>
-              )}
-              <div className="places-container">
-              { groupPlacesByCategory(day.place)[category].map((place, i) => (
-                <div key={i} className="place-card">
-                  <div className="place-info">
-                    <h3 className="place-name">{place.name}</h3>
-                    <p className="place-details">Rating: {place.rating}</p>
-                    <a
-                      href={`https://www.google.com/maps?q=${place.location.lat},${place.location.lng}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      View on Map
-                    </a>
-                  </div>
-                  <img
-                    src={place.photo}
-                    alt={place.name}
-                    className="place-photo"
-                  />
-                </div>
-              ))}
-              </div>
-            </div>
-          ))}
-        </div>
+      {planData.map((item) => (
+        <PlanCard
+          header={`Day ${item.day} - SATURDAY`}
+          place={groupPlacesByCategory(item.place)}
+        ></PlanCard>
       ))}
     </div>
   );

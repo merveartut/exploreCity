@@ -1,16 +1,17 @@
-import React from 'react'
-import Menu from '../Menu/Menu'
-import DailyPlan from '../DailyPlan/DailyPlan';
-import bgImg from "../../assets/2.jpg";
-import Image from 'react-bootstrap/Image';
-
+import React from "react";
+import Menu from "../Menu/Menu";
+import signBoard from "../../assets/signboard.png";
 import "./styles.css";
-function MenuPage({fullpageApi}) {
+import { useSelector } from "react-redux";
+function MenuPage({ fullpageApi }) {
+  const selectedCity = useSelector((state) => state.city.value);
   return (
     <div className="menuContainer">
-        <Menu fullpageApi={fullpageApi}></Menu>
-      </div>
-  )
+      <img src={signBoard} className="signBoardImg"></img>
+      <div className="boardText">{selectedCity.label.toUpperCase()}</div>
+      <Menu fullpageApi={fullpageApi}></Menu>
+    </div>
+  );
 }
 
-export default MenuPage
+export default MenuPage;

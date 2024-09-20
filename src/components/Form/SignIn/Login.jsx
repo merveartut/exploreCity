@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Formik, useFormik } from "formik";
 import { loginValidations } from "../validations";
 import "./styles.css";
@@ -20,8 +20,23 @@ import { setLoggedIn } from "../../../context/slices/loginSlice";
 function Form() {
   const [showModal, setShowModal] = useState(false)
   const navigate = useNavigate()
-  const { data, loading, error, loginUser } = usePost();
+  const { data, loading, error, loginUser } = usePost()
   const dispatch = useDispatch()
+  useEffect(() => {
+    console.log(data)
+    if (data) {
+      // Dispatch the action to set user data in context (Redux)
+      dispatch(
+        setLoggedIn({
+          email: data.user.email,
+          id: data.user.id,
+        })
+      );
+
+      // Navigate to the home page
+      navigate("/");
+    }
+  }, [data, dispatch, navigate])
   const {
     handleSubmit,
     handleChange,
@@ -37,13 +52,16 @@ function Form() {
       password: "",
       rememberme: false,
     },
-    onSubmit: (values) => {
-      setTimeout(() => {
-       setShowModal(true)
-       loginUser(values)
-       dispatch(setLoggedIn())
-       navigate("/")
-      }, 400);
+     onSubmit: async(values) => {
+      try {
+        setShowModal(true);
+        // Simulate login API call with user data
+       await loginUser(values);
+        // Dispatch the action to set user data in context (Redux)
+        
+      } catch (error) {
+        console.error("Login failed:", error);
+      }
     },
     validationSchema: loginValidations,
   });

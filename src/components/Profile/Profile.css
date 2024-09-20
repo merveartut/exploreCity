@@ -1,0 +1,29 @@
+.small-image-preview-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.day-preview {
+  margin-bottom: 20px;
+}
+
+.category-preview {
+  margin-top: 10px;
+}
+
+.images {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.small-image {
+  width: 50px; /* Adjust size as needed */
+  height: 50px; /* Adjust size as needed */
+  margin-right: 5px;
+  margin-bottom: 5px;
+  object-fit: cover; /* Maintain aspect ratio */
+}
+
+.previewContainer {
+  
+}

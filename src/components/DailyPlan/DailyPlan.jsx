@@ -21,24 +21,24 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
-import Tooltip from '@mui/material/Tooltip';
-import styles from "./DailyPlan.module.css"
-import Button from '@mui/material/Button'
+import Tooltip from "@mui/material/Tooltip";
+import styles from "./DailyPlan.module.css";
+import Button from "@mui/material/Button";
 
 function DailyPlan({ days, date, fullpageApi, selectedCity, setPlan, plan }) {
-  const [selectedDay, setSelectedDay] = useState(1)
-  const [selectedCategory, setSelectedCategory] = useState("hotel")
+  const [selectedDay, setSelectedDay] = useState(1);
+  const [selectedCategory, setSelectedCategory] = useState(selectedDay === days.length ? "restaurant" : "hotel");
 
   const handleListItemClick = (event, day) => {
-    setSelectedDay(day)
-    setSelectedCategory("hotel")
-  }
+    setSelectedDay(day);
+    setSelectedCategory("hotel");
+  };
   const handleAddLocation = (value) => {
-    setPlan(value)
-  }
+    setPlan(value);
+  };
   const handleCategoryClick = (categoryId) => {
-    setSelectedCategory(categoryId)
-  }
+    setSelectedCategory(categoryId);
+  };
   const handleDeleteLocation = (day, category, placeName) => {
     setPlan((prevState) => {
       const updatedPlaces = prevState.selectedPlaces
@@ -59,8 +59,8 @@ function DailyPlan({ days, date, fullpageApi, selectedCity, setPlan, plan }) {
       return { ...prevState, selectedPlaces: updatedPlaces };
     });
   };
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [openPopover, setOpenPopover] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null)
+  const [openPopover, setOpenPopover] = useState(false)
   const handlePopover = (event, index) => {
     event.preventDefault(); // Prevent default event behavior
     if (anchorEl && anchorEl === event.currentTarget) {
@@ -89,57 +89,26 @@ function DailyPlan({ days, date, fullpageApi, selectedCity, setPlan, plan }) {
 
     return grouped;
   };
-  
+
   return (
     <Container fluid={false}>
       {/* Stack the columns on mobile by making one full-width and the other half-width */}
       <Row style={{ justifyContent: "center" }}>
-        <Col
-          xs={2}
-          md={2}
-          sm={8}
-          style={{
-            alignContent: "center",
-            justifyContent: "center",
-            display: "flex",
-            border: "2px solid black",
-          }}
-        >
-          <h3>Days</h3>
+        <Col xs={2} md={2} sm={8} className={styles.headerCol}>
+          <h3 style={{fontSize:"20px"}}>Days</h3>
         </Col>
-        <Col
-          xs={10}
-          sm={8}
-          md={8}
-          style={{
-            alignContent: "center",
-            justifyContent: "center",
-            display: "flex",
-            border: "2px solid black",
-          }}
-        >
-          <h3>Location</h3>
+        <Col xs={10} sm={8} md={8} className={styles.headerCol}>
+          <h3 style={{fontSize:"20px"}}>Location</h3>
         </Col>
       </Row>
 
       {/* Columns start at 50% wide on mobile and bump up to 33.3% wide on desktop */}
       <Row style={{ justifyContent: "center" }}>
-        <Col
-          xs={2}
-          md={2}
-          style={{
-            alignContent: "center",
-            justifyContent: "center",
-            display: "block",
-            border: "2px solid black",
-            flexDirection: "column",
-          }}
-        >
+        <Col xs={2} md={2} className={styles.dayListCol}>
           <List
             sx={{
               width: "100%",
               maxWidth: 360,
-              bgcolor: "background.paper",
               height: "400px",
             }}
             style={{ height: "400px" }}
@@ -151,14 +120,34 @@ function DailyPlan({ days, date, fullpageApi, selectedCity, setPlan, plan }) {
                 <row style={{ display: "flex", flexDirection: "row" }}>
                   <ListItemButton
                     key={index}
+                    sx={{
+                      "&.Mui-selected": {
+                        backgroundColor: "rgb(87, 110, 211, .8)",
+                        height: "40px",
+                        textAlign: "center", // Change this to your desired color
+                        // Text color when selected
+                      },
+                    }}
                     selected={selectedDay === index + 1}
-                    onClick={(event) => handleListItemClick(event, index +1)}
-                    style={{ height: "40px", textAlign: "center" }}
+                    onClick={(event) => handleListItemClick(event, index + 1)}
+                    className={
+                      selectedDay === index + 1
+                        ? styles.selectedListItemButton
+                        : styles.listItemButton
+                    }
                   >
-                    <ListItemText primary={` ${index + 1}. day`} />
+                    <ListItemText
+                      primaryTypographyProps={{
+                        sx: {
+                          fontWeight: "bold", // Make text bold
+                        },
+                      }}
+                      className={styles.listItemText}
+                      primary={` ${index + 1}. day`}
+                    />
                   </ListItemButton>
                   <IconButton onClick={(e) => handlePopover(e, index + 1)}>
-                    <IoMdArrowDropright />
+                    <IoMdArrowDropright style={{height:"32px", color:"rgb(40, 43, 54)"}} />
                   </IconButton>
                 </row>
               ))
@@ -235,18 +224,7 @@ function DailyPlan({ days, date, fullpageApi, selectedCity, setPlan, plan }) {
               flexDirection: "row",
             }}
           >
-            <Col
-              xs={12}
-              md={11}
-              sm={10}
-              style={{
-                alignContent: "center",
-                justifyContent: "center",
-                display: "block",
-                border: "2px solid black",
-                flexDirection: "column",
-              }}
-            >
+            <Col xs={12} md={11} sm={10} className={styles.dayListCol}>
               <SelectMap
                 category={selectedCategory}
                 day={selectedDay}
@@ -256,47 +234,44 @@ function DailyPlan({ days, date, fullpageApi, selectedCity, setPlan, plan }) {
                 selectedLocations={plan}
                 fullPageApi={fullpageApi}
               ></SelectMap>
-               {!days.length && (
-              <div className={styles.disabledOverlay}>
-                <h2>Please select a date to enable the map</h2>
-              </div>
-            )}
+              {!days.length && (
+                <div className={styles.disabledOverlay}>
+                  <h2>Please select a date to enable the map</h2>
+                </div>
+              )}
             </Col>
             <Col xs={2} md={1} sm={2} style={{ padding: "0px" }}>
-              <div
-                style={{
-                  padding: "0px",
-                  justifyContent: "flex-start",
-                  display: "flex",
-                  flexDirection: "column",
-                  border: "2px solid black",
-                  height: "100%",
-                  alignItems:"center"
-                }}
-              >
+              <div className={styles.categoryCol}>
                 {categoriesConfig.map((category) => {
                   const Icon = category.icon;
-                  return (
-                      <Tooltip title={!days.length ? "Please select date first!" : category.id}>
-                        <span>
-                        <IconButton
-                        key={category.id}
-                        disabled={!days.length}
-                        onClick={() => handleCategoryClick(category.id)}
+                  if (category.id !== "hotel" || selectedDay !== days.length) {
+                    return (
+
+                      <Tooltip
+                        title={
+                          !days.length ? "Please select date first!" : category.id
+                        }
                       >
-                        <Icon
-                          style={{
-                            color:
-                              selectedCategory === category.id
-                                ? "blue"
-                                : "black",
-                          }}
-                        />
-                      </IconButton>
+                        <span>
+                          <IconButton
+                            key={category.id}
+                            disabled={!days.length}
+                            onClick={() => handleCategoryClick(category.id)}
+                          >
+                            <Icon
+                              style={{
+                                color:
+                                  selectedCategory === category.id
+                                    ? "blue"
+                                    : "black",
+                              }}
+                            />
+                          </IconButton>
                         </span>
-                     
                       </Tooltip>
-                  );
+                    );
+                  }
+                 
                 })}
               </div>
             </Col>

@@ -24,13 +24,21 @@ function usePost() {
   const loginUser = async (user) => {
     try {
       setLoading(true);
-      axios({
+      const response = await axios({
         method: 'post',
         url: 'http://localhost:3000/login',
         data: user
-      }).then ((responseData) => setData(responseData))
+      })
+      // const token = response.data.token
+      // if (token) {
+      //   localStorage.setItem("authToken", token)
+      //   alert("Login Success !")
+      // } else {
+      //   alert("No token received!")
+      // }
+      await setData(response.data)
       setLoading(false);
-      alert("Login Success !")
+      
     } catch (error) {
       setError(error);
       setLoading(false);

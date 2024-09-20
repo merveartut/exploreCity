@@ -1,22 +1,25 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialStates = {value: false}
+const initialState = {loggedIn: false, user: null}
 export const loginSlice = createSlice({
-    name: "loggedIn",
-    initialState: {
-        value: initialStates,
-    },
+    name: "auth",
+    initialState,
     reducers: {
-        setLoggedIn: (state) => {
-            if (typeof state !== 'object' || !state.hasOwnProperty('value')) {
-                state = { value: false }; // Reset the state to its correct structure
+        setLoggedIn: (state, action) => {
+            if (typeof state !== 'object') {
+                state = { loggedIn: false, user: null }; // Reset the state to its correct structure
             }
-            state.value = true;
+            state.loggedIn = true
+            state.user = action.payload
         },
         setLoggedOut: (state) => {
-            state.value = false
+            state.loggedIn = false
+            state.user = null
         }
     }
 })
 export const {setLoggedIn, setLoggedOut} = loginSlice.actions
 export default loginSlice.reducer
+
+
+
