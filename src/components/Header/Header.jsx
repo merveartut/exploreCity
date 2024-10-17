@@ -9,11 +9,12 @@ import { useState } from "react";
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
+import { action } from '@storybook/addon-actions'
 import { BsPersonCircle } from "react-icons/bs";
 function Header() {
   const theme = useSelector((state) => state.theme)
   const loggedIn = useSelector((state) => state.auth.loggedIn)
-  const user = useSelector((state) => state.auth.user)
+  const userId = useSelector((state) => state.auth.user)
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const [openBasic, setOpenBasic] = useState(false)
@@ -21,25 +22,27 @@ function Header() {
     dispatch(setLoggedOut())
     navigate("/login")
   }
-  console.log("logggg", user)
   return (
 
     <Navbar expand="lg" className="bg-body-tertiary">
     <Container style={{minWidth:"100%", paddingInline:"12px"}}>
-      <Navbar.Brand style={{textAlign:"center", justifyContent:"center"}} onClick={() => navigate("/")}>Wander</Navbar.Brand>
+      <Navbar.Brand style={{textAlign:"center", justifyContent:"center"}} onClick={() => navigate("/")}>Trawell</Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse>
         
   
           <Nav className="justify-content-end flex-grow-1 pe-3" style={{justifyContent:"end"}}>
           <NavDropdown
+          menuRole="menu"
               align="end"
+              aria-label="personButton"
+              data-testid="dropdownItems"
               title={<BsPersonCircle style={{ fontSize: "22px", cursor: "pointer" }} />}
               id="basic-nav-dropdown"
             >
-            {loggedIn && <NavDropdown.Item onClick={() => handleLogOut()}>Logout</NavDropdown.Item>}
+            {loggedIn && <NavDropdown.Item data-testid="logoutButton" aria-label="logout" onClick={() => handleLogOut()}>Logout</NavDropdown.Item>}
             {!loggedIn && <NavDropdown.Item onClick={() => navigate("/login")}>Login</NavDropdown.Item>}
-            <NavDropdown.Item onClick={() => navigate(`/profile/${user.id}`)}>Profile</NavDropdown.Item>
+            {loggedIn && <NavDropdown.Item onClick={() => navigate(`/profile/${userId}`)}>Profile</NavDropdown.Item>}
             <NavDropdown.Divider />
           </NavDropdown>
         </Nav>

@@ -16,6 +16,7 @@ import { setPlan } from "../../context/slices/planSlice";
 
 import { Button } from "react-bootstrap";
 import { IconButton } from "@mui/material";
+import zIndex from "@mui/material/styles/zIndex";
 function Menu({ fullpageApi }) {
   const selectedCity = useSelector((state) => state.city.value);
   const dispatch = useDispatch();
@@ -54,7 +55,7 @@ function Menu({ fullpageApi }) {
   };
   const fetchCities = async (inputValue) => {
     try {
-      const response = await axios.get(`http://localhost:3000/cities`);
+      const response = await axios.get(`http://localhost:3001/cities`);
       const filteredCities = response.data
         .filter((city) =>
           city.name.toLowerCase().includes(inputValue.toLowerCase())
@@ -101,6 +102,7 @@ function Menu({ fullpageApi }) {
       ...base,
       marginTop: 0,
       width: 400,
+      zIndex: 99999
     }),
   };
   const handleCreatePlan = (plan) => {

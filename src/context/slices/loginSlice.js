@@ -10,7 +10,8 @@ export const loginSlice = createSlice({
                 state = { loggedIn: false, user: null }; // Reset the state to its correct structure
             }
             state.loggedIn = true
-            state.user = action.payload
+            console.log(action.payload, "id mi ????")
+            state.user = action.payload.id
         },
         setLoggedOut: (state) => {
             state.loggedIn = false

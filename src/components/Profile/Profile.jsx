@@ -12,8 +12,9 @@ function Profile() {
     const fetchUserPlan = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/users/${userId}`
-        );
+          `http://localhost:8080/api/auth/${userId}/plans`
+        )
+        console.log("nerde hoca planlar", response)
         setUserPlans(response.data.plans);
       } catch (error) {
         setError(error.message);
@@ -23,7 +24,6 @@ function Profile() {
     };
     fetchUserPlan();
   }, [userId]);
-  console.log("bubububuubu", userPlans)
   return (
     <div className="profile-container">
       <h2>Your Travel Plans</h2>

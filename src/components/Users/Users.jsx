@@ -19,7 +19,7 @@ function Users() {
   const [filterText, setFilterText] = useState("");
   const navigate = useNavigate();
   useEffect(() => {
-    axios("http://localhost:3000/users").then((res) => setUsers(res.data));
+    axios("http://localhost:3001/users").then((res) => setUsers(res.data));
   }, [data]);
   const searchResult = users.filter((user) => {
     return Object.keys(user).some((key) => {

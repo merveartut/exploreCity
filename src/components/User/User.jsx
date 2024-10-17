@@ -5,10 +5,10 @@ import axios from 'axios'
 function User() {
     const { id } = useParams()
     const [user, setUser] = useState({})
-    useEffect(() => {
-        axios(`http://localhost:3000/users/${id}`)
-        .then((res) => setUser(res.data))
-    }, [])
+    // useEffect(() => {
+    //     axios(`http://localhost:3000/users/${id}`)
+    //     .then((res) => setUser(res.data))
+    // }, [])
   return (
     <div>
         <pre >

@@ -93,7 +93,7 @@ function List({date}) {
 
   const fetchCities = async (inputValue) => {
     try {
-      const response = await axios.get(`http://localhost:3000/cities`);
+      const response = await axios.get(`http://localhost:3001/cities`);
       const filteredCities = response.data
         .filter((city) =>
           city.name.toLowerCase().includes(inputValue.toLowerCase())

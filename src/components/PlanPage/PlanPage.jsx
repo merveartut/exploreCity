@@ -14,39 +14,50 @@ import { useSelector } from "react-redux";
 function PlanPage() {
   const location = useLocation()
   const { plan } = location.state || {}
-  const userData = useSelector((state) => state.auth.user)
+  const userId = useSelector((state) => state.auth.user)
   const [planImage, setPlanImage] = useState(null)
+  const [userPlans, setUserPlans] = useState()
+  const getUser = async () => {
+    // Get user data from the fake API
+    const { data } = await axios.get(
+      `http://localhost:8080/api/auth/user/${userId}`
+    )
+    console.log(data, "bueneeeeeeeeeeeeeeeeeeeeeeeeeeee")
+    return data
+  }
+
   const handleAddPlan = async () => {
     try {
-      if (!userData) {
+      if (!userId) {
         console.error("No user is logged in.")
         return
       }
-      // Get the user data from the fake API
-      const response = await axios.get(`http://localhost:3000/users?email=${userData.email}`);
-      const user = response.data[0] // Assuming you get the user object
-      
-      if (user) {
-        const updatedPlan = {
-          ...plan,
-          image:planImage, // Add the image property to the plan
+      const user = await getUser()
+
+        if (user) {
+          const updatedPlan = {
+            ...plan,
+            image: planImage, // Add the image property to the plan
+          }
+          console.log("USEEEEEEEEEEEER", user)
+          await axios({
+            method: "post",
+            url: "http://localhost:8080/api/plan/add",
+            data: plan,
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+  
+          setUserPlans(user.plans)
+          console.log("Plan successfully added to user:", user.firstName)
         }
-        // Update the user's plans by appending the new plan
-        const updatedPlans = [...(user.plans || []), updatedPlan] // Append the new plan
-
-        // Send the PATCH request to update the user's plans
-        await axios.patch(`http://localhost:3000/users/${user.id}`, {
-          plans: updatedPlans
-        })
-
-        console.log("Plan successfully added to user:", user.firstName)
-      }
+       
     } catch (error) {
       console.error("Error adding plan to user:", error)
     }
-  }
-console.log("NOOOOOLU", plan)
-
+  };
+  const isPlanAdded = () => {}
   return (
     <div style={{ display: "flex" }}>
       <Toolbar
@@ -63,9 +74,7 @@ console.log("NOOOOOLU", plan)
             justifyContent: "flex-start",
           }}
         >
-          <Tooltip
-            title={"ADD TO MY PLANS"}
-          >
+          <Tooltip title={"ADD TO MY PLANS"}>
             <span>
               <IconButton
                 onClick={() => handleAddPlan()}
@@ -82,23 +91,21 @@ console.log("NOOOOOLU", plan)
               </IconButton>
             </span>
           </Tooltip>
-          <Tooltip
-            title={"GO BACK TO EDIT"}
-          >
+          <Tooltip title={"GO BACK TO EDIT"}>
             <span>
-          <IconButton
-            style={{
-              width: "32px",
-              height: "32px",
-              margin: "0px",
-              padding: "4px",
-              backgroundColor: "white",
-              marginTop: "8px",
-            }}
-          >
-            <MdEdit />
-          </IconButton>
-          </span>
+              <IconButton
+                style={{
+                  width: "32px",
+                  height: "32px",
+                  margin: "0px",
+                  padding: "4px",
+                  backgroundColor: "white",
+                  marginTop: "8px",
+                }}
+              >
+                <MdEdit />
+              </IconButton>
+            </span>
           </Tooltip>
         </div>
       </Toolbar>
