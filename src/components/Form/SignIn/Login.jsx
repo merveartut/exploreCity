@@ -23,13 +23,12 @@ function Form() {
   const { data, loading, error, loginUser } = usePost()
   const dispatch = useDispatch()
   useEffect(() => {
-    console.log(data)
+    console.log(data, "dataatatatatatat")
     if (data) {
       // Dispatch the action to set user data in context (Redux)
       dispatch(
         setLoggedIn({
-          email: data.user.email,
-          id: data.user.id,
+          id: data,
         })
       );
 

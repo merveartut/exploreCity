@@ -9,7 +9,7 @@
     "@fortawesome/fontawesome-svg-core": "^6.6.0",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
-    "@fullpage/react-fullpage": "^0.1.42",
+    "@fullpage/react-fullpage": "^0.1.45",
     "@mui/icons-material": "^5.16.6",
     "@mui/material": "^5.16.7",
     "@mui/styled-engine-sc": "^6.0.0-alpha.18",
@@ -18,12 +18,10 @@
     "@react-google-maps/api": "^2.19.3",
     "@react-pdf/renderer": "^3.4.4",
     "@reduxjs/toolkit": "^2.2.7",
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
     "@vis.gl/react-google-maps": "^1.1.1",
     "axios": "^1.7.2",
     "bootstrap": "^5.3.3",
+    "date-fns": "^2.27.0",
     "dayjs": "^1.11.13",
     "flowbite-react": "^0.10.1",
     "font-awesome": "^4.7.0",
@@ -62,12 +60,15 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
       "react-app",
-      "react-app/jest"
+      "react-app/jest",
+      "plugin:storybook/recommended"
     ]
   },
   "browserslist": {
@@ -83,9 +84,32 @@
     ]
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.25.4",
+    "@babel/preset-react": "^7.24.7",
+    "@chromatic-com/storybook": "^1.9.0",
     "@fortawesome/fontawesome-free": "^6.6.0",
     "@hookform/resolvers": "^3.9.0",
+    "@storybook/addon-actions": "^8.3.3",
+    "@storybook/addon-essentials": "^8.3.3",
+    "@storybook/addon-interactions": "^8.3.3",
+    "@storybook/addon-links": "^8.3.3",
+    "@storybook/addon-onboarding": "^8.3.3",
+    "@storybook/blocks": "^8.3.3",
+    "@storybook/preset-create-react-app": "^8.3.3",
+    "@storybook/react": "^8.3.3",
+    "@storybook/react-webpack5": "^8.3.3",
+    "@storybook/test": "^8.3.3",
+    "@testing-library/jest-dom": "^6.5.0",
+    "@testing-library/react": "^16.0.1",
+    "@testing-library/user-event": "^14.5.2",
+    "eslint": "^8.57.1",
+    "eslint-config-react-app": "^7.0.1",
+    "eslint-plugin-storybook": "^0.9.0",
+    "jest": "^27.5.1",
+    "prop-types": "^15.8.1",
     "react-hook-form": "^7.52.1",
+    "storybook": "^8.3.3",
+    "webpack": "^5.95.0",
     "yup": "^1.4.0"
   }
 }

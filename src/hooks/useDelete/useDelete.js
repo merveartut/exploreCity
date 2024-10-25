@@ -10,7 +10,7 @@ function useDelete() {
       setLoading(true);
       axios({
         method: "delete",
-        url: `http://localhost:3000/users/${id}`,
+        url: `http://localhost:3001/users/${id}`,
       }).then((res) => setData(res));
       setLoading(false);
     } catch (error) {

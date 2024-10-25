@@ -26,22 +26,30 @@ import styles from "./DailyPlan.module.css";
 import Button from "@mui/material/Button";
 
 function DailyPlan({ days, date, fullpageApi, selectedCity, setPlan, plan }) {
-  const [selectedDay, setSelectedDay] = useState(1);
-  const [selectedCategory, setSelectedCategory] = useState(selectedDay === days.length ? "restaurant" : "hotel");
+  const [selectedDay, setSelectedDay] = useState(1)
+  const [selectedCategory, setSelectedCategory] = useState("hotel")
 
   const handleListItemClick = (event, day) => {
-    setSelectedDay(day);
-    setSelectedCategory("hotel");
-  };
+    setSelectedDay(day)
+    setSelectedCategory("hotel")
+  }
   const handleAddLocation = (value) => {
-    setPlan(value);
-  };
+    setPlan(value)
+  }
   const handleCategoryClick = (categoryId) => {
-    setSelectedCategory(categoryId);
-  };
+    setSelectedCategory(categoryId)
+  }
+  useEffect(() => {
+    if (selectedDay === days.length) {
+      setSelectedCategory("restaurant")
+    } else {
+      setSelectedCategory("hotel")
+    }
+  }, [selectedDay])
+  console.log("plaaaaan", plan)
   const handleDeleteLocation = (day, category, placeName) => {
     setPlan((prevState) => {
-      const updatedPlaces = prevState.selectedPlaces
+      const updatedPlaces = prevState
         .map((location) => {
           if (location.day === day) {
             return {
@@ -52,53 +60,60 @@ function DailyPlan({ days, date, fullpageApi, selectedCity, setPlan, plan }) {
               ),
             };
           }
-          return location;
+          return location
         })
         .filter((location) => location.place.length > 0); // Remove day if no places left
 
-      return { ...prevState, selectedPlaces: updatedPlaces };
+      return { ...prevState, updatedPlaces }
     });
   };
   const [anchorEl, setAnchorEl] = useState(null)
   const [openPopover, setOpenPopover] = useState(false)
   const handlePopover = (event, index) => {
-    event.preventDefault(); // Prevent default event behavior
+    event.preventDefault() // Prevent default event behavior
     if (anchorEl && anchorEl === event.currentTarget) {
       // If the same item is clicked, close the menu
-      setAnchorEl(null);
-      setOpenPopover(false);
+      setAnchorEl(null)
+      setOpenPopover(false)
     } else {
       // If a different item is clicked, open the menu for the new item
-      setAnchorEl(event.currentTarget);
-      setOpenPopover(true);
-      setSelectedDay(index); // Set the selected item to the new one
+      setAnchorEl(event.currentTarget)
+      setOpenPopover(true)
+      setSelectedDay(index) // Set the selected item to the new one
     }
-  };
+  }
   const groupPlacesByCategory = (places, selectedDay) => {
-    const grouped = {};
-
-    places
+    const grouped = {}
+    if (places.length) {
+      places
       .filter((item) => item.day === selectedDay)
-      .flatMap((item) => item.place)
-      .forEach((place) => {
-        if (!grouped[place.category]) {
-          grouped[place.category] = [];
+      .forEach((item) => {
+        if (!grouped[item.category]) {
+          grouped[item.category] = []
         }
-        grouped[place.category].push(place);
+        grouped[item.category].push(item)
       });
 
-    return grouped;
+    return grouped
+    }
+   
   };
+  
+  const generatePlanId = () => {
+    return Math.random().toString(36).substr(2, 9)
+  }
+
+  const planId = generatePlanId()
 
   return (
     <Container fluid={false}>
       {/* Stack the columns on mobile by making one full-width and the other half-width */}
       <Row style={{ justifyContent: "center" }}>
         <Col xs={2} md={2} sm={8} className={styles.headerCol}>
-          <h3 style={{fontSize:"20px"}}>Days</h3>
+          <h3 style={{fontSize:"16px", padding:"3px"}}>Days</h3>
         </Col>
         <Col xs={10} sm={8} md={8} className={styles.headerCol}>
-          <h3 style={{fontSize:"20px"}}>Location</h3>
+          <h3 style={{fontSize:"16px", padding:"3px"}}>Location</h3>
         </Col>
       </Row>
 
@@ -127,6 +142,7 @@ function DailyPlan({ days, date, fullpageApi, selectedCity, setPlan, plan }) {
                         textAlign: "center", // Change this to your desired color
                         // Text color when selected
                       },
+                      textAlign:"center"
                     }}
                     selected={selectedDay === index + 1}
                     onClick={(event) => handleListItemClick(event, index + 1)}
@@ -171,8 +187,8 @@ function DailyPlan({ days, date, fullpageApi, selectedCity, setPlan, plan }) {
             }}
           >
             <div style={{ padding: "10px" }}>
-              {Object.entries(
-                groupPlacesByCategory(plan.selectedPlaces, selectedDay)
+              {plan.length && Object.entries(
+                groupPlacesByCategory(plan, selectedDay)
               ).map(([category, places], index) => (
                 <Accordion key={index} style={{ width: "100%" }}>
                   <AccordionSummary
@@ -231,8 +247,10 @@ function DailyPlan({ days, date, fullpageApi, selectedCity, setPlan, plan }) {
                 date={date}
                 selectedCity={selectedCity}
                 addPlace={handleAddLocation}
-                selectedLocations={plan}
+                planId={planId}
+                plan={plan}
                 fullPageApi={fullpageApi}
+                setSelectedCategory={setSelectedCategory}
               ></SelectMap>
               {!days.length && (
                 <div className={styles.disabledOverlay}>

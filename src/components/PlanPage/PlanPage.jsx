@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { PDFDownloadLink, pdf } from "@react-pdf/renderer";
 import { Document, Page } from "@react-pdf/renderer";
 import TravelPlan from "../TravelPlan/TravelPlan";
@@ -9,44 +9,69 @@ import { FaPlus } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import Tooltip from "@mui/material/Tooltip";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { MdOutlineDone } from "react-icons/md";
+import { setPlanId } from "../../context/slices/planSlice";
 
 function PlanPage() {
-  const location = useLocation()
-  const { plan } = location.state || {}
-  const userData = useSelector((state) => state.auth.user)
-  const [planImage, setPlanImage] = useState(null)
+  const location = useLocation();
+  const { plan, date } = location.state || {};
+  const userId = useSelector((state) => state.auth.user);
+  const planId = useSelector((state) => state.plan.planId)
+  const [planAdded, setPlanAdded] = useState(false)
+  const [planImage, setPlanImage] = useState(null);
+  const [userPlans, setUserPlans] = useState();
+  const dispatch = useDispatch()
+  const getUser = async () => {
+    // Get user data from the fake API
+    const { data } = await axios.get(
+      `http://localhost:8080/api/auth/user/${userId}`
+    );
+    return data;
+  };
+
   const handleAddPlan = async () => {
     try {
-      if (!userData) {
-        console.error("No user is logged in.")
-        return
+      if (!userId) {
+        console.error("No user is logged in.");
+        return;
       }
-      // Get the user data from the fake API
-      const response = await axios.get(`http://localhost:3000/users?email=${userData.email}`);
-      const user = response.data[0] // Assuming you get the user object
-      
+      const user = await getUser();
+
       if (user) {
-        const updatedPlan = {
-          ...plan,
-          image:planImage, // Add the image property to the plan
-        }
-        // Update the user's plans by appending the new plan
-        const updatedPlans = [...(user.plans || []), updatedPlan] // Append the new plan
-
-        // Send the PATCH request to update the user's plans
-        await axios.patch(`http://localhost:3000/users/${user.id}`, {
-          plans: updatedPlans
-        })
-
-        console.log("Plan successfully added to user:", user.firstName)
+       const { data } = await axios({
+          method: "post",
+          url: `http://localhost:8080/api/plan/add?userId=${userId}`,
+          data: plan,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        dispatch(setPlanId(data))
+        setUserPlans(user["plans"]);
+        console.log("Plan successfully added to user:", user["firstName"]);
       }
     } catch (error) {
-      console.error("Error adding plan to user:", error)
+      console.error("Error adding plan to user:", error);
     }
-  }
-console.log("NOOOOOLU", plan)
-
+  };
+  useEffect(() => {
+    const fetchPlanStatus = async () => {
+      console.log("neeeeebuuuuuuu", planId)
+      try {
+        const { data } = await axios.get(`http://localhost:8080/api/plan/exists?userId=${userId}&planId=${planId}`);
+        console.log("sonuç", data)
+        setPlanAdded(data);  // Set the result directly
+      } catch (error) {
+        console.error("Error fetching plan status:", error);
+        setPlanAdded(false);  // Handle error case, setting to false or handling error state
+      }
+    };
+    // Call the async function
+    if (planId) {
+      fetchPlanStatus();
+    }
+  }, [plan])
   return (
     <div style={{ display: "flex" }}>
       <Toolbar
@@ -63,12 +88,11 @@ console.log("NOOOOOLU", plan)
             justifyContent: "flex-start",
           }}
         >
-          <Tooltip
-            title={"ADD TO MY PLANS"}
-          >
+          <Tooltip title={"ADD TO MY PLANS"}>
             <span>
               <IconButton
                 onClick={() => handleAddPlan()}
+                disabled= {planAdded ? true : false}
                 style={{
                   width: "32px",
                   height: "32px",
@@ -78,32 +102,31 @@ console.log("NOOOOOLU", plan)
                   marginTop: "8px",
                 }}
               >
-                <FaPlus />
+                {!planAdded && <FaPlus />}
+                {planAdded && <MdOutlineDone />}
               </IconButton>
             </span>
           </Tooltip>
-          <Tooltip
-            title={"GO BACK TO EDIT"}
-          >
+          <Tooltip title={"GO BACK TO EDIT"}>
             <span>
-          <IconButton
-            style={{
-              width: "32px",
-              height: "32px",
-              margin: "0px",
-              padding: "4px",
-              backgroundColor: "white",
-              marginTop: "8px",
-            }}
-          >
-            <MdEdit />
-          </IconButton>
-          </span>
+              <IconButton
+                style={{
+                  width: "32px",
+                  height: "32px",
+                  margin: "0px",
+                  padding: "4px",
+                  backgroundColor: "white",
+                  marginTop: "8px",
+                }}
+              >
+                <MdEdit />
+              </IconButton>
+            </span>
           </Tooltip>
         </div>
       </Toolbar>
 
-      <TravelPlan planData={plan?.selectedPlaces} captureImage={setPlanImage} />
+      <TravelPlan planData={plan} date={date} captureImage={setPlanImage} />
     </div>
   );
 }

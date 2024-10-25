@@ -1,22 +1,24 @@
-import React, { useEffect } from "react"
-import { useState, useRef } from "react"
-import { Map, Marker, useApiIsLoaded } from "@vis.gl/react-google-maps"
-import { APIProvider } from "@vis.gl/react-google-maps"
-import { InfoWindow } from "@vis.gl/react-google-maps"
-import { useDispatch, useSelector } from "react-redux"
-import { setCity } from "../../context/slices/citySlice"
-import { FaCheckCircle } from 'react-icons/fa'
+import React, { useEffect } from "react";
+import { useState, useRef } from "react";
+import { Map, Marker, useApiIsLoaded } from "@vis.gl/react-google-maps";
+import { APIProvider } from "@vis.gl/react-google-maps";
+import { InfoWindow } from "@vis.gl/react-google-maps";
+import { useDispatch, useSelector } from "react-redux";
+import { setCity } from "../../context/slices/citySlice";
+import { FaCheckCircle } from "react-icons/fa";
 
-import styles from "./DailyPlan.module.css"
-import { IconButton } from "@mui/material"
+import styles from "./DailyPlan.module.css";
+import { IconButton } from "@mui/material";
 function SelectMap({
   selectedCity,
   category,
   day,
   date,
   addPlace,
-  selectedLocations,
+  plan,
+  planId,
   fullPageApi,
+  setSelectedCategory,
 }) {
   const [selectedLocation, setSelectedLocation] = useState({
     location: {},
@@ -27,12 +29,12 @@ function SelectMap({
   const [dialogLocation, setDialogLocation] = useState("");
   const [placeName, setPlaceName] = useState("");
   const [cityCoordinates, setCityCoordinates] = useState(null);
-  const infoWindowRef = useRef(null)
+  const infoWindowRef = useRef(null);
   const [placeDetails, setPlaceDetails] = useState({ photo: "", rating: "" });
   const mapRef = useRef(null);
   const dispatch = useDispatch();
   const city = useSelector((state) => state.city.value);
-  
+
   const geocodeCity = (cityName) => {
     const geocoder = new window.google.maps.Geocoder();
     geocoder.geocode({ address: cityName }, (results, status) => {
@@ -55,122 +57,93 @@ function SelectMap({
   };
   const [markerLocation, setMarkerLocation] = useState(city.coord);
   const handleMapClick = (mapProps) => {
-    setShowDialog(false)
+    setShowDialog(false);
     if (!mapRef.current) {
       console.error("Map reference is not initialized.");
       return;
     }
-  
+
     fullPageApi.setAllowScrolling(false);
     setShowDialog(true);
-    
-    const placeId = mapProps.detail.placeId
+
+    const placeId = mapProps.detail.placeId;
     if (placeId) {
-      const lat = mapProps.detail.latLng.lat
-      const lng = mapProps.detail.latLng.lng
-      const map = mapRef.current.map // Use mapRef.current.map
-  
-      const service = new window.google.maps.places.PlacesService(map)
-      const request = { placeId }
-  
+      const lat = mapProps.detail.latLng.lat;
+      const lng = mapProps.detail.latLng.lng;
+      const map = mapRef.current.map; // Use mapRef.current.map
+
+      const service = new window.google.maps.places.PlacesService(map);
+      const request = { placeId };
+
       service.getDetails(request, (place, status) => {
         if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-          setPlaceName(place.name)
+          setPlaceName(place.name);
           const placePhoto =
             place.photos && place.photos[0]
               ? place.photos[0].getUrl({ maxWidth: 300 })
               : "";
-          const placeRating = place.rating || "No rating available"
-          setPlaceDetails({ photo: placePhoto, rating: placeRating })
+          const placeRating = place.rating || "No rating available";
+          setPlaceDetails({ photo: placePhoto, rating: placeRating });
         } else {
-          console.error("PlacesService failed due to: " + status)
+          console.error("PlacesService failed due to: " + status);
         }
       });
-  
-      setDialogLocation({ lat, lng })
+
+      setDialogLocation({ lat, lng });
       setSelectedLocation({
         location: { lat, lng },
         placeId: placeId,
         map: map, // Set map to the current instance
       });
     } else {
-      alert("Please select the specific location")
+      alert("Please select the specific location");
     }
   };
+
   const toggleLocation = () => {
     if (!selectedLocation.location.lat || !selectedLocation.location.lng) {
-      alert("Location is not selected.")
+      alert("Location is not selected.");
       return;
     }
 
-    addPlace((prevState) => {
-      const updatedPlaces = [...prevState.selectedPlaces]
-      const dayIndex = updatedPlaces.findIndex(
-       
-        (loc) =>  {
-         return loc.day === day
-        }
-      )
-      if (dayIndex !== -1) {
-        const locationIndex = updatedPlaces[dayIndex].place.findIndex(
-          (p) => p.location.lat === selectedLocation.location.lat && p.location.lng === selectedLocation.location.lng
-        )
+    const addLocation = () => {
+      // if dayIndex -1 it means we are creating the plan of the day for first
+      const dayIndex = plan.findIndex((place) => {
+        return place.day === day;
+      });
 
-        if (locationIndex !== -1) {
-          // Remove location
-          updatedPlaces[dayIndex].place.splice(locationIndex, 1)
-
-          // If no more locations for that day, remove day entry
-          if (updatedPlaces[dayIndex].place.length === 0) {
-            updatedPlaces.splice(dayIndex, 1)
-          }
-        } else {
-          // Add location
-          if (
-            category === "hotel" &&
-            updatedPlaces[dayIndex].place.some(
-              (p) => p.category === "hotel"
-            )
-          ) {
-            alert(`A hotel for day ${day} has already been added.`);
-            return;
-          }
-
-          updatedPlaces[dayIndex].place.push({
+      const updatedPlaces = []
+      if (dayIndex !== -1 && isLocationAdded()) {
+        alert(`This place is already added.`)
+      } else {
+          updatedPlaces.push({
             category,
-            name: placeName || "Unknown Place", // Adjust default name
+            name: placeName || "Unknown Place",
             location: selectedLocation.location,
             photo: placeDetails.photo,
             rating: placeDetails.rating,
+            day: day,
+            city: selectedCity
           });
+          addPlace([...plan, ...updatedPlaces])
+          if (category === "hotel") {
+          setSelectedCategory("restaurant");
         }
-      } else {
-        // Day does not exist, add a new entry
-        updatedPlaces.push({
-          day,
-          place: [
-            {
-              category,
-              name: placeName || "Unknown Place", // Adjust default name
-              location: selectedLocation.location,
-              photo: placeDetails.photo,
-              rating: placeDetails.rating,
-            },
-          ],
-        });
       }
-      return { ...prevState, selectedPlaces: updatedPlaces };
-    });
+      //adding extra places
+    };
+    addLocation()
     fullPageApi.setAllowScrolling(true);
-  }
-  const isLocationAdded = (location) => {
-
-    return selectedLocations.selectedPlaces.some(
+  };
+  const isLocationAdded = () => {
+    if (!plan.length) {
+      return false;
+    }
+    return plan.some(
       (place) =>
-        place.day === day &&
-        place.place.some((p) => p.name === placeName)
+        place.day === day && place.name === placeName
     )
-  }
+  };
   const handleMouseEnter = () => {
     if (fullPageApi) fullPageApi.setAllowScrolling(false);
   };
@@ -190,28 +163,33 @@ function SelectMap({
     }
   }, [cityCoordinates]);
   const handleClickOutside = (event) => {
-    if (infoWindowRef.current && !infoWindowRef.current.contains(event.target)) {
+    if (
+      infoWindowRef.current &&
+      !infoWindowRef.current.contains(event.target)
+    ) {
       // Check if the clicked target is a scroll bar or the scrollable content
-      if (!event.target.closest(".gm-style-iw") && !event.target.closest(`.${styles.infoWindow}`)) {
+      if (
+        !event.target.closest(".gm-style-iw") &&
+        !event.target.closest(`.${styles.infoWindow}`)
+      ) {
         setShowDialog(false);
       }
     }
-  }
+  };
   useEffect(() => {
     if (showDialog) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     } else {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [showDialog])
+  }, [showDialog]);
   const handleMapLoad = (map) => {
     mapRef.current = map; // Store the map instance when the map loads
-  }
-  console.log("jjjjjjjjjjjj", date)
+  };
   return (
     <div
       style={{ padding: "2px" }}
@@ -233,30 +211,34 @@ function SelectMap({
             onClick={(mapProps) => handleMapClick(mapProps)}
           >
             {showDialog && (
-                <InfoWindow 
+              <InfoWindow
                 headerContent={placeName}
-                position={dialogLocation} 
-                className={styles.infoWindow}  
+                position={dialogLocation}
+                className={styles.infoWindow}
                 onClose={() => setShowDialog(false)}
-                style={{height:"auto", overflow:"visible"}}
-                >
-                  <div ref={infoWindowRef} className={styles.infoWindow}>
-                  <img src={placeDetails.photo} style={{height:"100px"}}></img>
+                style={{ height: "auto", overflow: "visible" }}
+              >
+                <div ref={infoWindowRef} className={styles.infoWindow}>
+                  <img
+                    src={placeDetails.photo}
+                    style={{ height: "100px" }}
+                  ></img>
                   <div className={styles.ratingText}>{placeDetails.rating}</div>
-                  
-                  {isLocationAdded(cityCoordinates) ? (
-                    
-                  <IconButton onClick={toggleLocation}>
-                    <FaCheckCircle style={{color:"seagreen"}}/>
-                  </IconButton>
-                ) : (
-                  <button className={styles.addButton} onClick={toggleLocation}>
-                    Add this location
-                  </button>
-                )}
-                  </div>
-                
-                </InfoWindow>
+                  {isLocationAdded()}
+                  {isLocationAdded() ? (
+                    <IconButton onClick={toggleLocation}>
+                      <FaCheckCircle style={{ color: "seagreen" }} />
+                    </IconButton>
+                  ) : (
+                    <button
+                      className={styles.addButton}
+                      onClick={toggleLocation}
+                    >
+                      Add this location
+                    </button>
+                  )}
+                </div>
+              </InfoWindow>
             )}
 
             <Marker position={markerLocation} />

@@ -11,7 +11,6 @@ export const citySlice = createSlice({
     },
     reducers: {
         setCity: (state, action) => {
-            console.log("aaaaaa", action.payload)
            state.value = action.payload
         },
     }
