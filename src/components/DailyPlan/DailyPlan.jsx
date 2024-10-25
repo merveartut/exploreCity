@@ -49,7 +49,7 @@ function DailyPlan({ days, date, fullpageApi, selectedCity, setPlan, plan }) {
   console.log("plaaaaan", plan)
   const handleDeleteLocation = (day, category, placeName) => {
     setPlan((prevState) => {
-      const updatedPlaces = prevState.selectedPlaces
+      const updatedPlaces = prevState
         .map((location) => {
           if (location.day === day) {
             return {
@@ -64,7 +64,7 @@ function DailyPlan({ days, date, fullpageApi, selectedCity, setPlan, plan }) {
         })
         .filter((location) => location.place.length > 0); // Remove day if no places left
 
-      return { ...prevState, selectedPlaces: updatedPlaces }
+      return { ...prevState, updatedPlaces }
     });
   };
   const [anchorEl, setAnchorEl] = useState(null)
@@ -84,19 +84,26 @@ function DailyPlan({ days, date, fullpageApi, selectedCity, setPlan, plan }) {
   }
   const groupPlacesByCategory = (places, selectedDay) => {
     const grouped = {}
-
-    places
+    if (places.length) {
+      places
       .filter((item) => item.day === selectedDay)
-      .flatMap((item) => item.place)
-      .forEach((place) => {
-        if (!grouped[place.category]) {
-          grouped[place.category] = []
+      .forEach((item) => {
+        if (!grouped[item.category]) {
+          grouped[item.category] = []
         }
-        grouped[place.category].push(place)
+        grouped[item.category].push(item)
       });
 
     return grouped
+    }
+   
   };
+  
+  const generatePlanId = () => {
+    return Math.random().toString(36).substr(2, 9)
+  }
+
+  const planId = generatePlanId()
 
   return (
     <Container fluid={false}>
@@ -180,8 +187,8 @@ function DailyPlan({ days, date, fullpageApi, selectedCity, setPlan, plan }) {
             }}
           >
             <div style={{ padding: "10px" }}>
-              {plan && Object.entries(
-                groupPlacesByCategory(plan.selectedPlaces, selectedDay)
+              {plan.length && Object.entries(
+                groupPlacesByCategory(plan, selectedDay)
               ).map(([category, places], index) => (
                 <Accordion key={index} style={{ width: "100%" }}>
                   <AccordionSummary
@@ -240,7 +247,8 @@ function DailyPlan({ days, date, fullpageApi, selectedCity, setPlan, plan }) {
                 date={date}
                 selectedCity={selectedCity}
                 addPlace={handleAddLocation}
-                selectedLocations={plan}
+                planId={planId}
+                plan={plan}
                 fullPageApi={fullpageApi}
                 setSelectedCategory={setSelectedCategory}
               ></SelectMap>

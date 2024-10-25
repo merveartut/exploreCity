@@ -13,8 +13,23 @@ function PlanCard({ header, place }) {
     slidesToShow: 1, // Show one slide at a time
     slidesToScroll: 1, // Scroll one slide at a time
   };
-  const allImages = Object.keys(place).flatMap((categoryKey) =>
-    place[categoryKey].map((item) => item.photo)
+  const groupPlacesByCategory = (places) => {
+    return places.reduce((acc, place) => {
+      const { category } = place;
+      if (!acc[category]) {
+        acc[category] = [];
+      }
+      acc[category].push(place); // Add the place to its category array
+      return acc;
+    }, {});
+  };
+  const transformedPlaces = groupPlacesByCategory(place);
+  Object.keys(transformedPlaces).map((place) => console.log(place));
+  const allImages = Object.keys(transformedPlaces).flatMap((categoryKey) =>
+    transformedPlaces[categoryKey].map((item) => ({
+      photo: item.photo, // URL of the photo
+      name: item.name, // Name of the item
+    }))
   );
   return (
     <Card
@@ -26,23 +41,35 @@ function PlanCard({ header, place }) {
         justifyContent: "space-evenly",
         boxShadow: "none",
         backgroundColor: "floralwhite",
+        padding: "30px",
+        width: "600px",
       }}
     >
       <div style={{ width: "200px", backgroundColor: "white" }}>
         <Slider {...sliderSettings}>
-          {allImages.map((imgUrl, index) => (
+          {allImages.map((img, index) => (
             <div key={index} style={{ backgroundColor: "white" }}>
               <img
-                src={imgUrl}
-                alt={`place-${index}`}
+                src={img.photo} // Use img.photo for the image URL
+                alt={img.name} // Use img.name for the alt text
                 style={{
                   objectFit: "fill",
                   height: "200px",
                   width: "100%",
                   padding: "10px",
-                  paddingBottom: "24px",
+                  paddingBottom: "14px",
                 }}
               />
+              {/* Display the name of the item below the image */}
+              <div
+                style={{
+                  textAlign: "center",
+                  paddingBottom: "10px",
+                  fontSize: "10px",
+                }}
+              >
+                {img.name}
+              </div>
             </div>
           ))}
         </Slider>
@@ -60,17 +87,16 @@ function PlanCard({ header, place }) {
           }}
         >
           <ul>
-            {Object.keys(place).map((categoryKey) => (
-              <li style={{ alignItems: "center" }}>
-                <div
-                  key={categoryKey}
-                  style={{ marginBottom: "15px", padding: "0px" }}
-                >
+            {Object.keys(transformedPlaces).map((categoryKey) => (
+              <li key={categoryKey} style={{ alignItems: "center" }}>
+                <div style={{ marginBottom: "15px", padding: "0px" }}>
                   <Card.Text className="cardText">
                     <strong className="categoryText">
                       {categoryKey.toUpperCase()}:
                     </strong>{" "}
-                    {place[categoryKey].map((item) => item.name).join(", ")}
+                    {transformedPlaces[categoryKey]
+                      .map((item) => item.name)
+                      .join(", ")}
                   </Card.Text>
                 </div>
               </li>

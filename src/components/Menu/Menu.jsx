@@ -21,9 +21,7 @@ function Menu({ fullpageApi }) {
   const selectedCity = useSelector((state) => state.city.value);
   const dispatch = useDispatch();
   const loggedIn = useSelector((state) => state.auth.loggedIn);
-  const [plan, setPlans] = useState({
-    selectedPlaces: [],
-  });
+  const [plan, setPlans] = useState([]);
   const PAGE_SIZE = 50;
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
@@ -107,7 +105,7 @@ function Menu({ fullpageApi }) {
   };
   const handleCreatePlan = (plan) => {
     dispatch(setPlan(plan))
-    navigate(`/plan/${selectedCity.label}/${plan}`, { state: { selectedCity, plan } })
+    navigate(`/plan/${selectedCity.label}/${dayRange}/${plan}`, { state: { selectedCity, date, plan } })
   }
   return (
     <div className={styles.outerContainer}>

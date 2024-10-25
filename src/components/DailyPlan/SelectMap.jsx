@@ -15,9 +15,10 @@ function SelectMap({
   day,
   date,
   addPlace,
-  selectedLocations,
+  plan,
+  planId,
   fullPageApi,
-  setSelectedCategory
+  setSelectedCategory,
 }) {
   const [selectedLocation, setSelectedLocation] = useState({
     location: {},
@@ -98,99 +99,62 @@ function SelectMap({
       alert("Please select the specific location");
     }
   };
+
   const toggleLocation = () => {
     if (!selectedLocation.location.lat || !selectedLocation.location.lng) {
       alert("Location is not selected.");
       return;
     }
 
-    addPlace((prevState) => {
-      const updatedPlaces = [...prevState.selectedPlaces]
+    const addLocation = () => {
       // if dayIndex -1 it means we are creating the plan of the day for first
-      const dayIndex = updatedPlaces.findIndex((place) => {
+      const dayIndex = plan.findIndex((place) => {
         return place.day === day;
-      })
+      });
 
-      //adding extra places
-      if (dayIndex !== -1) {
-        const dayOfPlan = updatedPlaces[dayIndex]
-        const placeIndex = dayOfPlan.place.findIndex(
-          (p) =>
-            p.location.lat === selectedLocation.location.lat &&
-            p.location.lng === selectedLocation.location.lng
-        )
-
-        if (placeIndex !== -1) {
-          // updatedPlaces[dayIndex].place.splice(locationIndex, 1)
-
-          // If no more locations for that day, remove day entry
-          if (dayOfPlan.place.length === 0) {
-            updatedPlaces.splice(dayIndex, 1)
-          }
-        } else {
-          // Add location
-          // if selected category is hotel and there is added hotel before
-          if (
-            category === "hotel" &&
-            dayOfPlan.place.some((p) => p.category === "hotel")
-          ) {
-            alert(`A hotel for day ${day} has already been added.`)
-          } else {
-            dayOfPlan.place.push({
-              category,
-              name: placeName || "Unknown Place",
-              location: selectedLocation.location,
-              photo: placeDetails.photo,
-              rating: placeDetails.rating,
-            })
-            // after hotel selected set category as next category
-            if (category === "hotel") {
-              setSelectedCategory("restaurant")
-            }
-          }
-        }
+      const updatedPlaces = []
+      if (dayIndex !== -1 && isLocationAdded()) {
+        alert(`This place is already added.`)
       } else {
-        // Day does not exist, add a new entry
-        updatedPlaces.push({
-          day,
-          place: [
-            {
-              category,
-              name: placeName || "Unknown Place",
-              location: selectedLocation.location,
-              photo: placeDetails.photo,
-              rating: placeDetails.rating,
-            },
-          ],
-        })
-        if (category === "hotel") {
-          setSelectedCategory("restaurant")
+          updatedPlaces.push({
+            category,
+            name: placeName || "Unknown Place",
+            location: selectedLocation.location,
+            photo: placeDetails.photo,
+            rating: placeDetails.rating,
+            day: day,
+            city: selectedCity
+          });
+          addPlace([...plan, ...updatedPlaces])
+          if (category === "hotel") {
+          setSelectedCategory("restaurant");
         }
       }
-      return { ...prevState, selectedPlaces: updatedPlaces }
-    })
-    fullPageApi.setAllowScrolling(true)
-  }
-  const isLocationAdded = (location) => {
-    if (!selectedLocations) {
-      return false
+      //adding extra places
+    };
+    addLocation()
+    fullPageApi.setAllowScrolling(true);
+  };
+  const isLocationAdded = () => {
+    if (!plan.length) {
+      return false;
     }
-    return selectedLocations.selectedPlaces.some(
+    return plan.some(
       (place) =>
-        place.day === day && place.place.some((p) => p.name === placeName)
+        place.day === day && place.name === placeName
     )
-  }
+  };
   const handleMouseEnter = () => {
-    if (fullPageApi) fullPageApi.setAllowScrolling(false)
-  }
+    if (fullPageApi) fullPageApi.setAllowScrolling(false);
+  };
 
   const handleMouseLeave = () => {
-    if (fullPageApi) fullPageApi.setAllowScrolling(true)
-  }
+    if (fullPageApi) fullPageApi.setAllowScrolling(true);
+  };
 
   useEffect(() => {
-    geocodeCity(selectedCity)
-  }, [selectedCity])
+    geocodeCity(selectedCity);
+  }, [selectedCity]);
 
   useEffect(() => {
     if (mapRef.current && cityCoordinates) {
@@ -260,8 +224,8 @@ function SelectMap({
                     style={{ height: "100px" }}
                   ></img>
                   <div className={styles.ratingText}>{placeDetails.rating}</div>
-
-                  {isLocationAdded(cityCoordinates) ? (
+                  {isLocationAdded()}
+                  {isLocationAdded() ? (
                     <IconButton onClick={toggleLocation}>
                       <FaCheckCircle style={{ color: "seagreen" }} />
                     </IconButton>

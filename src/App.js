@@ -47,7 +47,7 @@ function App() {
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/themeSwitcher" element={<ThemeSwitcher />} />
                 <Route path="/weather" element={<Weather />} />
-                <Route path="/plan/:city/:plan" element={<PlanPage />} />
+                <Route path="/plan/:city/:date/:plan" element={<PlanPage />} />
                 <Route
                   path="/profile/:userId"
                   element={

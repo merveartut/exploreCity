@@ -2,23 +2,29 @@ import { createSlice } from "@reduxjs/toolkit";
 
 export const planSlice = createSlice({
     name: "plan",
-    initialState: {
-        value: [],
-    },
+    initialState: { plan:[], planId: ""},
     reducers: {
         setPlan: (state, action) => {
-           state.value = action.payload
+           state.plan = action.payload
+        },
+        setPlanId: (state, action) => {
+            console.log("neymiş", action)
+            console.log("önceden buymş", state.planId)
+            state.planId = action.payload.toString()
         },
         clearPlan: (state) => {
-            state.value = []
+            state = {
+                plan: [],
+                planId: ""
+            };
         },
         addItem:(state, action) => {
-            state.value.push(action.payload)
+            state.plan.push(action.payload)
         },
         deleteItem: (state, action) => {
-            state.value = state.value.filter(item => item.id !== action.payload.id)
+            state.plan = state.plan.filter(item => item.id !== action.payload.id)
         }
     }
 })
-export const {setPlan, clearPlan, addItem, deleteItem} = planSlice.actions
+export const {setPlan, clearPlan, addItem, deleteItem, setPlanId} = planSlice.actions
 export default planSlice.reducer
