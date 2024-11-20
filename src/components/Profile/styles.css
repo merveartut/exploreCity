@@ -1,0 +1,12 @@
+
+
+.profile-container {
+  padding: 20px;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(2, 3fr); /* 5 columns */
+  grid-template-rows: repeat(2, 300px);  /* 5 rows, each 100px tall */
+  gap: 20px; /* Space between grid items */
+}

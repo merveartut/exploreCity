@@ -1,0 +1,15 @@
+.sliderContainer .slick-slide > div {
+
+    width: 800px;
+  
+  }
+  
+.sliderContainer .slick-list {
+    width: 800px
+}
+.sliderContainer .slick-slider {
+    width: 800px
+}
+.sliderContainer {
+    width: 100%;
+}

@@ -16,12 +16,11 @@ import "./styles.css";
 import { useFormik } from "formik";
 import { signUpvalidations } from "../validations";
 import usePost from "../../../hooks/usePost/usePost";
-import { Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
 function SignUp() {
   const { data, loading, error, addUser } = usePost();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const {
     handleSubmit,
     handleChange,
@@ -40,20 +39,21 @@ function SignUp() {
       passwordConfirm: "",
       gender: null,
       country: "",
-      agreement: false,
     },
     onSubmit: (values) => {
       setTimeout(() => {
         const { passwordConfirm, ...postData } = values;
         addUser(postData);
-        navigate("/users")
+        //navigate("/users")
       }, 400);
     },
     validationSchema: signUpvalidations,
   });
+
   if (error) {
-    Alert.alert("User signup failed, there is an error !");
+    console.log(error);
   }
+
   const formValid = isValid && Object.keys(touched).length > 0;
   return (
     <form onBlur={handleBlur} onSubmit={handleSubmit}>
@@ -207,29 +207,25 @@ function SignUp() {
               ) : null}
             </div>
 
-            <div className="d-flex flex-row justify-content-center mb-4">
-              <MDBCheckbox
-                name="agreement"
-                label="I agree all statements in Terms of service"
-                value={values.agreement}
-                onChange={handleChange}
-                required
-              />
-            </div>
             <MDBRow>
-            <MDBCol className='d-flex flex-column align-items-center'>
-            <MDBBtn
-              className="w-100 gradient-custom-4"
-              disabled={!formValid || Object.keys(errors).length || loading}
-              type="submit"
-            >
-              Register
-            </MDBBtn>
-            <div
-            >
-              Already have an account ? <MDBBtn onClick={() => navigate("/login")} className="gradient-custom-5 p-2">Login here !</MDBBtn>
-            </div>
-            </MDBCol>
+              <MDBCol className="d-flex flex-column align-items-center">
+                <MDBBtn
+                  className="w-100 gradient-custom-4"
+                  disabled={!formValid || Object.keys(errors).length || loading}
+                  type="submit"
+                >
+                  Register
+                </MDBBtn>
+                <div>
+                  Already have an account ?{" "}
+                  <MDBBtn
+                    onClick={() => navigate("/login")}
+                    className="gradient-custom-5 p-2"
+                  >
+                    Login here !
+                  </MDBBtn>
+                </div>
+              </MDBCol>
             </MDBRow>
           </MDBCardBody>
         </MDBCard>
